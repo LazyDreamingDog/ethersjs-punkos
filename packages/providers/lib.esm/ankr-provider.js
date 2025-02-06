@@ -14,6 +14,8 @@ function getHost(name) {
             return "rpc.ankr.com/eth_rinkeby/";
         case "goerli":
             return "rpc.ankr.com/eth_goerli/";
+        case "sepolia":
+            return "rpc.ankr.com/eth_sepolia/";
         case "matic":
             return "rpc.ankr.com/polygon/";
         case "arbitrum":

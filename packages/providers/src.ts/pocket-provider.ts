@@ -51,6 +51,9 @@ export class PocketProvider extends UrlJsonRpcProvider {
             case "goerli":
                 host = "eth-goerli.gateway.pokt.network";
                 break;
+            case "sepolia":
+                host = "eth-sepolia.gateway.pokt.network";
+                break;
             case "homestead":
                 host = "eth-mainnet.gateway.pokt.network";
                 break;

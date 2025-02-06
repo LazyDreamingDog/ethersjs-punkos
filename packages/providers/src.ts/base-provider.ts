@@ -1457,6 +1457,26 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
+    // getInterest here    
+    async getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getInterest", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getInterest",
+                params, result, error
+            });
+        }
+    }
+
+
     async getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number> {
         await this.getNetwork();
         const params = await resolveProperties({

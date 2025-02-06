@@ -19,6 +19,7 @@ const blockchainData = {
             {
                 address: "0xAC1639CF97a3A46D431e6d1216f576622894cBB5",
                 balance: bnify("4813414100000000"),
+                interest: bnify("0"),
                 code: "0x"
             },
             // Splitter contract
@@ -150,11 +151,12 @@ const blockchainData = {
             }
         ]
     },
-    goerli: {
+    sepolia: {
         addresses: [
             {
                 address: "0x06B5955A67D827CDF91823E3bB8F069e6c89c1D6",
                 balance: bnify("314159000000000000"),
+                interest: bnify("0"),
                 code: "0x"
             },
         ],
@@ -260,7 +262,7 @@ function waiter(duration) {
         }
     });
 }
-const allNetworks = ["default", "homestead", "goerli"];
+const allNetworks = ["default", "homestead", "sepolia"];
 // We use separate API keys because otherwise the testcases sometimes
 // fail during CI because our default keys are pretty heavily used
 const _ApiKeys = {
@@ -346,7 +348,7 @@ const providerFunctions = [
     },
     {
         name: "PocketProvider",
-        networks: ["default", "homestead", "goerli"],
+        networks: ["default", "homestead", "sepolia"],
         create: (network) => {
             if (network == "default") {
                 return new ethers.providers.PocketProvider(null, {
@@ -406,6 +408,11 @@ Object.keys(blockchainData).forEach((network) => {
             addSimpleTest(`fetches account balance: ${test.address}`, (provider) => {
                 return provider.getBalance(test.address);
             }, test.balance);
+        }
+        if (test.interest) {
+            addSimpleTest(`fetches account interest: ${test.address}`, (provider) => {
+                return provider.getInterest(test.address);
+            }, test.interest);
         }
         if (test.code) {
             addSimpleTest(`fetches account code: ${test.address}`, (provider) => {
@@ -477,7 +484,7 @@ Object.keys(blockchainData).forEach((network) => {
     function addErrorTest(code, func) {
         testFunctions.push({
             name: `throws correct ${code} error`,
-            networks: ["goerli"],
+            networks: ["sepolia"],
             checkSkip: (provider, network, test) => {
                 return false;
             },
@@ -536,7 +543,7 @@ testFunctions.push({
     name: "sends a legacy transaction",
     extras: [ "funding" ],         // We need funding to the fundWallet
     timeout: 900,                  // 15 minutes
-    networks: [ "goerli" ],       // Only test on Goerli
+    networks: [ "sepolia" ],       // Only test on sepolia
     checkSkip: (provider: string, network: string, test: TestDescription) => {
         // This isn't working right now on Ankr
         return (provider === "AnkrProvider");
@@ -573,7 +580,7 @@ testFunctions.push({
     name: "sends an EIP-2930 transaction",
     extras: ["funding"],
     timeout: 900,
-    networks: ["goerli"],
+    networks: ["sepolia"],
     checkSkip: (provider, network, test) => {
         // This isn't working right now on Ankr
         return (provider === "AnkrProvider");
@@ -608,7 +615,7 @@ testFunctions.push({
     name: "sends an EIP-1559 transaction",
     extras: ["funding"],
     timeout: 900,
-    networks: ["goerli"],
+    networks: ["sepolia"],
     checkSkip: (provider, network, test) => {
         // These don't support EIP-1559 yet for sending
         //return (provider === "AlchemyProvider" );
@@ -941,13 +948,13 @@ describe("Test Events", function () {
     it("InfuraProvider", function () {
         return __awaiter(this, void 0, void 0, function* () {
             this.timeout(60000);
-            const provider = new ethers.providers.InfuraProvider("goerli");
+            const provider = new ethers.providers.InfuraProvider("sepolia");
             yield testBlockEvent(provider);
         });
     });
 });
 describe("Bad ENS resolution", function () {
-    const provider = providerFunctions[0].create("goerli");
+    const provider = providerFunctions[0].create("sepolia");
     it("signer has a bad ENS name", function () {
         return __awaiter(this, void 0, void 0, function* () {
             this.timeout(300000);
@@ -985,7 +992,7 @@ describe("Resolve ENS avatar", function () {
         it(`Resolves avatar for ${test.title}`, function () {
             return __awaiter(this, void 0, void 0, function* () {
                 this.timeout(60000);
-                const provider = ethers.getDefaultProvider("goerli", getApiKeys("goerli"));
+                const provider = ethers.getDefaultProvider("sepolia", getApiKeys("sepolia"));
                 const avatar = yield provider.getAvatar(test.name);
                 assert.equal(test.value, avatar, "avatar url");
             });
@@ -1023,7 +1030,7 @@ describe("Resolve ENS content hash", function () {
     });
 });
 describe("Test EIP-2544 ENS wildcards", function () {
-    const provider = (providerFunctions[0].create("goerli"));
+    const provider = (providerFunctions[0].create("sepolia"));
     it("Resolves recursively", function () {
         return __awaiter(this, void 0, void 0, function* () {
             const resolver = yield provider.getResolver("ricmoose.hatch.eth");
@@ -1046,7 +1053,7 @@ describe("Test CCIP execution", function () {
         'function testPost(bytes callData) view returns (bytes32)',
         'function verifyTest(bytes result, bytes extraData) pure returns (bytes32)'
     ];
-    const provider = providerFunctions[0].create("goerli");
+    const provider = providerFunctions[0].create("sepolia");
     const contract = new ethers.Contract(address, ABI, provider);
     // This matches the verify method in the Solidity contract against the
     // processed data from the endpoint
@@ -1090,7 +1097,7 @@ describe("Test CCIP execution", function () {
     it("testGet should fail with CCIP explicitly disabled on provider", function () {
         return __awaiter(this, void 0, void 0, function* () {
             this.timeout(60000);
-            const provider = providerFunctions[0].create("goerli");
+            const provider = providerFunctions[0].create("sepolia");
             provider.disableCcipRead = true;
             const contract = new ethers.Contract(address, ABI, provider);
             try {

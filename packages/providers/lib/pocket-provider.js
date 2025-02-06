@@ -57,6 +57,9 @@ var PocketProvider = /** @class */ (function (_super) {
             case "goerli":
                 host = "eth-goerli.gateway.pokt.network";
                 break;
+            case "sepolia":
+                host = "eth-sepolia.gateway.pokt.network";
+                break;
             case "homestead":
                 host = "eth-mainnet.gateway.pokt.network";
                 break;

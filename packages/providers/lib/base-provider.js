@@ -1548,6 +1548,40 @@ var BaseProvider = /** @class */ (function (_super) {
             });
         });
     };
+    // getInterest here    
+    BaseProvider.prototype.getInterest = function (addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                address: this._getAddress(addressOrName),
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getInterest", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getInterest",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
     BaseProvider.prototype.getTransactionCount = function (addressOrName, blockTag) {
         return __awaiter(this, void 0, void 0, function () {
             var params, result;

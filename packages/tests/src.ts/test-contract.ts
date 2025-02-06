@@ -8,7 +8,7 @@ import { sendTransaction } from "./utils"
 
 import contractData from "./test-contract.json";
 
-const provider = new ethers.providers.InfuraProvider("goerli", "49a0efa3aaee4fd99797bfa94d8ce2f1");
+const provider = new ethers.providers.InfuraProvider("sepolia", "49a0efa3aaee4fd99797bfa94d8ce2f1");
 //const provider = ethers.getDefaultProvider("rinkeby");
 
 const TIMEOUT_PERIOD = 120000;

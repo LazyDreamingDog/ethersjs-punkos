@@ -11820,15 +11820,15 @@
 	        var w = this.words[i];
 	        var word = (((w << off) | carry) & 0xffffff).toString(16);
 	        carry = (w >>> (24 - off)) & 0xffffff;
-	        if (carry !== 0 || i !== this.length - 1) {
-	          out = zeros[6 - word.length] + word + out;
-	        } else {
-	          out = word + out;
-	        }
 	        off += 2;
 	        if (off >= 26) {
 	          off -= 26;
 	          i--;
+	        }
+	        if (carry !== 0 || i !== this.length - 1) {
+	          out = zeros[6 - word.length] + word + out;
+	        } else {
+	          out = word + out;
 	        }
 	      }
 	      if (carry !== 0) {
@@ -26440,6 +26440,40 @@
 	            });
 	        });
 	    };
+	    // getInterest here    
+	    BaseProvider.prototype.getInterest = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getInterest", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getInterest",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
 	    BaseProvider.prototype.getTransactionCount = function (addressOrName, blockTag) {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var params, result;
@@ -28987,6 +29021,9 @@
 	            case "goerli":
 	                host = "eth-goerli.g.alchemy.com/v2/";
 	                break;
+	            case "sepolia":
+	                host = "eth-sepolia.g.alchemy.com/v2/";
+	                break;
 	            case "matic":
 	                host = "polygon-mainnet.g.alchemy.com/v2/";
 	                break;
@@ -29065,6 +29102,8 @@
 	            return "rpc.ankr.com/eth_rinkeby/";
 	        case "goerli":
 	            return "rpc.ankr.com/eth_goerli/";
+	        case "sepolia":
+	            return "rpc.ankr.com/eth_sepolia/";
 	        case "matic":
 	            return "rpc.ankr.com/polygon/";
 	        case "arbitrum":
@@ -30845,6 +30884,9 @@
 	        switch (network ? network.name : "unknown") {
 	            case "goerli":
 	                host = "eth-goerli.gateway.pokt.network";
+	                break;
+	            case "sepolia":
+	                host = "eth-sepolia.gateway.pokt.network";
 	                break;
 	            case "homestead":
 	                host = "eth-mainnet.gateway.pokt.network";

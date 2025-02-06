@@ -71,6 +71,9 @@ var AlchemyProvider = /** @class */ (function (_super) {
             case "goerli":
                 host = "eth-goerli.g.alchemy.com/v2/";
                 break;
+            case "sepolia":
+                host = "eth-sepolia.g.alchemy.com/v2/";
+                break;
             case "matic":
                 host = "polygon-mainnet.g.alchemy.com/v2/";
                 break;

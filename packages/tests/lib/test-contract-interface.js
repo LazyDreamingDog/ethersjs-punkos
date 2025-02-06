@@ -554,7 +554,7 @@ describe('Test EIP-838 Error Codes', function () {
             return __generator(this, function (_a) {
                 switch (_a.label) {
                     case 0:
-                        provider = new ethers_1.ethers.providers.InfuraProvider("goerli", "49a0efa3aaee4fd99797bfa94d8ce2f1");
+                        provider = new ethers_1.ethers.providers.InfuraProvider("sepolia", "49a0efa3aaee4fd99797bfa94d8ce2f1");
                         contract = new ethers_1.ethers.Contract(addr, [
                             "function testError1(bool pass, address addr, uint256 value) pure returns (bool)",
                             "function testError2(bool pass, bytes data) pure returns (bool)",

@@ -1268,6 +1268,26 @@ export class BaseProvider extends Provider {
             }
         });
     }
+    // getInterest here    
+    getInterest(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getInterest", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getInterest",
+                    params, result, error
+                });
+            }
+        });
+    }
     getTransactionCount(addressOrName, blockTag) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getNetwork();

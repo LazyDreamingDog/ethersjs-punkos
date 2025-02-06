@@ -20499,6 +20499,26 @@ class BaseProvider extends Provider {
             }
         });
     }
+    // getInterest here    
+    getInterest(addressOrName, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getInterest", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getInterest",
+                    params, result, error
+                });
+            }
+        });
+    }
     getTransactionCount(addressOrName, blockTag) {
         return __awaiter$9(this, void 0, void 0, function* () {
             yield this.getNetwork();
@@ -22339,6 +22359,9 @@ class AlchemyProvider extends UrlJsonRpcProvider {
             case "goerli":
                 host = "eth-goerli.g.alchemy.com/v2/";
                 break;
+            case "sepolia":
+                host = "eth-sepolia.g.alchemy.com/v2/";
+                break;
             case "matic":
                 host = "polygon-mainnet.g.alchemy.com/v2/";
                 break;
@@ -22388,6 +22411,8 @@ function getHost(name) {
             return "rpc.ankr.com/eth_rinkeby/";
         case "goerli":
             return "rpc.ankr.com/eth_goerli/";
+        case "sepolia":
+            return "rpc.ankr.com/eth_sepolia/";
         case "matic":
             return "rpc.ankr.com/polygon/";
         case "arbitrum":
@@ -23716,6 +23741,9 @@ class PocketProvider extends UrlJsonRpcProvider {
         switch (network ? network.name : "unknown") {
             case "goerli":
                 host = "eth-goerli.gateway.pokt.network";
+                break;
+            case "sepolia":
+                host = "eth-sepolia.gateway.pokt.network";
                 break;
             case "homestead":
                 host = "eth-mainnet.gateway.pokt.network";

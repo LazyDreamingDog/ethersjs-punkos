@@ -30055,6 +30055,8 @@
 	            };
 	        // No additional normalizing required; serialize is enough
 	        case "getBalance":
+	        // Add user defined function here
+	        case "getInterest":
 	        case "getTransactionCount":
 	        case "getCode":
 	        case "getStorageAt":
@@ -30149,6 +30151,7 @@
 	                        case "getGasPrice": return [3 /*break*/, 1];
 	                        case "getEtherPrice": return [3 /*break*/, 2];
 	                        case "getBalance": return [3 /*break*/, 3];
+	                        case "getInterest": return [3 /*break*/, 3];
 	                        case "getTransactionCount": return [3 /*break*/, 3];
 	                        case "getCode": return [3 /*break*/, 3];
 	                        case "getStorageAt": return [3 /*break*/, 6];

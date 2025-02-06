@@ -23123,6 +23123,8 @@ function getProcessFunc(provider, method, params) {
             };
         // No additional normalizing required; serialize is enough
         case "getBalance":
+        // Add user defined function here
+        case "getInterest":
         case "getTransactionCount":
         case "getCode":
         case "getStorageAt":
@@ -23214,6 +23216,7 @@ function getRunner(config, currentBlockNumber, method, params) {
                 }
                 break;
             case "getBalance":
+            case "getInterest":
             case "getTransactionCount":
             case "getCode":
                 if (params.blockTag && isHexString(params.blockTag)) {

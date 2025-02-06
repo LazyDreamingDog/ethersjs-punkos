@@ -268,6 +268,8 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
 
         // No additional normalizing required; serialize is enough
         case "getBalance":
+        // Add user defined function here
+        case "getInterest":  
         case "getTransactionCount":
         case "getCode":
         case "getStorageAt":
@@ -311,7 +313,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
             }
             break;
 
-        default:
+            default:
             throw new Error("unknown method: " + method);
     }
 
@@ -360,6 +362,7 @@ async function getRunner(config: RunningConfig, currentBlockNumber: number, meth
             }
             break;
         case "getBalance":
+        case "getInterest":
         case "getTransactionCount":
         case "getCode":
             if (params.blockTag && isHexString(params.blockTag)) {

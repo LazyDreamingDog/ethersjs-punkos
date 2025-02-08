@@ -21754,6 +21754,9 @@ class JsonRpcProvider extends BaseProvider {
                 return ["eth_gasPrice", []];
             case "getBalance":
                 return ["eth_getBalance", [getLowerCase(params.address), params.blockTag]];
+            // add getInterest params construct here
+            case "getInterest":
+                return ["eth_getInterest", [getLowerCase(params.address), params.blockTag]];
             case "getTransactionCount":
                 return ["eth_getTransactionCount", [getLowerCase(params.address), params.blockTag]];
             case "getCode":

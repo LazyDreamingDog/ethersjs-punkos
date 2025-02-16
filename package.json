@@ -1,5 +1,5 @@
 {
-  "name": "ethers",
+  "name": "ethers-punkos",
   "common": {
     "ethereum": "donations.ethers.eth",
     "funding": [
@@ -16,7 +16,7 @@
   "private": true,
   "repository": {
     "type": "git",
-    "url": "git://github.com/ethers-io/ethers.js.git"
+    "url": "git://github.com/teddycode/ethersjs-punkos.git"
   },
   "scripts": {
     "preinstall": "npm run bootstrap-hoist",

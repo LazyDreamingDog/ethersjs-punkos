@@ -43,6 +43,7 @@ classDiagram
    
 ## 执行测试
 ```shell
+npm run build-all
  FAUCET_PRIVATEKEY="YOU_PRIVATEKEY_FORTEST"  npm run test-punkos
 
 ```

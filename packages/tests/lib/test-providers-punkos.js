@@ -137,26 +137,6 @@ function waiter(duration) {
         }
     });
 }
-// We use separate API keys because otherwise the testcases sometimes
-// fail during CI because our default keys are pretty heavily used
-// const _ApiKeys: Record<string, string> = {
-//     alchemy: "YrPw6SWb20vJDRFkhWq8aKnTQ8JRNRHM",
-//     etherscan: "FPFGK6JSW2UHJJ2666FG93KP7WC999MNW7",
-//     infura: "49a0efa3aaee4fd99797bfa94d8ce2f1",
-//     pocket: "62fd9de24b068e0039c16996"
-// };
-// type ApiKeySet = {
-//     alchemy: string;
-//     etherscan: string;
-//     infura: string;
-//     pocket: string;
-// };
-// function getApiKeys(network: string): ApiKeySet {
-//     if (network === "default" || network == null) { network = "punkos"; }
-//     const apiKeys = ethers.utils.shallowCopy(_ApiKeys);
-//     //apiKeys.pocket = _ApiKeysPocket[network];
-//     return <ApiKeySet>apiKeys;
-// }
 // 定义的测试网络provider
 var providerFunctions = [
     // Add local provider for punkos test
@@ -253,6 +233,12 @@ Object.keys(blockchainData).forEach(function (network) {
     tests.blocks.forEach(function (test) {
         addObjectTest("fetches block (by number) #" + test.number, function (provider) {
             return provider.getBlock(test.number);
+        }, test);
+        addObjectTest("getPowGas", function (provider) {
+            return provider.getPowGas("latest");
+        }, test);
+        addObjectTest("getPowPrice", function (provider) {
+            return provider.getPowPrice("latest");
         }, test);
     });
     // TODO 单节点网络测试的哈希不确定

@@ -258,8 +258,31 @@ export abstract class Provider implements OnceBlockable {
 
     // Account
     abstract getBalance(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-    // Add user defined function
+
+    // Add punkos defined functions
+    // GetPowDifficulty 返回指定区块的PowDifficulty
     abstract getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetPowGas 返回指定区块的PowGas
+    abstract getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetPowPrice 返回指定区块的PowPrice
+    abstract getPowPrice(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetAvgRatioNumerator 返回指定区块的AvgRatioNumerator
+    abstract getAvgRatioNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetAvgRatioDenominator 返回指定区块的AvgRatioDenominator
+    abstract gettAvgRatioDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetAvgGasNumerator 返回指定区块的AvgGasNumerator
+    abstract getAvgGasNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetAvgGasDenominator 返回指定区块的AvgGasDenominator
+    abstract getAvgGasDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetPoSLeader 返回指定区块的PoSLeader
+    abstract gePoSLeader(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetPoSVoting 返回指定区块的PoSVoting
+    abstract getPoSVoting(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<Uint8Array>;
+	// GetCommitTxLength 返回指定区块的CommitTxLength
+    abstract getCommitTxLength(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+	// GetIncentive 返回指定区块的Incentive
+    abstract getIncentive(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+
     abstract getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
     abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> ;
     abstract getStorageAt(addressOrName: string | Promise<string>, position: BigNumberish | Promise<BigNumberish>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;

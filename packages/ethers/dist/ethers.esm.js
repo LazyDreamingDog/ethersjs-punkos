@@ -20499,7 +20499,8 @@ class BaseProvider extends Provider {
             }
         });
     }
-    // getInterest here    
+    // add punkos functions
+    // getInterests    
     getInterest(addressOrName, blockTag) {
         return __awaiter$9(this, void 0, void 0, function* () {
             yield this.getNetwork();
@@ -20514,6 +20515,206 @@ class BaseProvider extends Provider {
             catch (error) {
                 return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
                     method: "getInterest",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getPowGas    
+    getPowGas(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPowGas", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPowGas",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getPowGas    
+    getPowPrice(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPowPrice", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPowPrice",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getAvgRatioNumerator    
+    getAvgRatioNumerator(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getAvgRatioNumerator", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getAvgRatioNumerator",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // gettAvgRatioDenominator    
+    gettAvgRatioDenominator(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("gettAvgRatioDenominator", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "gettAvgRatioDenominator",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getAvgGasNumerator    
+    getAvgGasNumerator(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getAvgGasNumerator", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getAvgGasNumerator",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getAvgGasNumerator    
+    getAvgGasDenominator(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getAvgGasDenominator", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getAvgGasDenominator",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // gePoSLeader    
+    gePoSLeader(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("gePoSLeader", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "gePoSLeader",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // gePoSLeader    
+    getPoSVoting(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPoSVoting", params);
+            try {
+                return Uint8Array.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPoSVoting",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getCommitTxLength    
+    getCommitTxLength(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getCommitTxLength", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getCommitTxLength",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getIncentive    
+    getIncentive(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getIncentive", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getIncentive",
                     params, result, error
                 });
             }
@@ -21757,6 +21958,39 @@ class JsonRpcProvider extends BaseProvider {
             // add getInterest params construct here
             case "getInterest":
                 return ["eth_getInterest", [getLowerCase(params.address), params.blockTag]];
+            // GetPowDifficulty 返回指定区块的PowDifficulty
+            case "getPowDifficulty":
+                return ["eth_getPowDifficulty", [params.blockHashOrNumber,]];
+            // GetPowGas 返回指定区块的PowGas
+            case "getPowGas":
+                return ["eth_getPowGas", [params.blockHashOrNumber,]];
+            // GetPowPrice 返回指定区块的PowPrice
+            case "getPowPrice":
+                return ["eth_getPowPrice", [params.blockHashOrNumber,]];
+            // GetAvgRatioNumerator 返回指定区块的AvgRatioNumerator
+            case "getAvgRatioNumerator":
+                return ["eth_getAvgRatioNumerator", [params.blockHashOrNumber,]];
+            // GetAvgRatioDenominator 返回指定区块的AvgRatioDenominator
+            case "getAvgRatioDenominator":
+                return ["eth_getAvgRatioDenominator", [params.blockHashOrNumber,]];
+            // GetAvgGasNumerator 返回指定区块的AvgGasNumerator
+            case "getAvgGasNumerator":
+                return ["eth_getAvgGasNumerator", [params.blockHashOrNumber,]];
+            // GetAvgGasDenominator 返回指定区块的AvgGasDenominator
+            case "getAvgGasDenominator":
+                return ["eth_getAvgGasDenominator", [params.blockHashOrNumber,]];
+            // GetPoSLeader 返回指定区块的PoSLeader
+            case "getPoSLeader":
+                return ["eth_getPoSLeader", [params.blockHashOrNumber,]];
+            // GetPoSVoting 返回指定区块的PoSVoting
+            case "getPoSVoting":
+                return ["eth_getPoSVoting", [params.blockHashOrNumber,]];
+            // GetCommitTxLength 返回指定区块的CommitTxLength
+            case "getCommitTxLength":
+                return ["eth_getCommitTxLength", [params.blockHashOrNumber,]];
+            // GetIncentive 返回指定区块的Incentive
+            case "getIncentive":
+                return ["eth_getIncentive", [params.blockHashOrNumber,]];
             case "getTransactionCount":
                 return ["eth_getTransactionCount", [getLowerCase(params.address), params.blockTag]];
             case "getCode":
@@ -23126,8 +23360,20 @@ function getProcessFunc(provider, method, params) {
             };
         // No additional normalizing required; serialize is enough
         case "getBalance":
-        // Add user defined function here
+        // ============= Add punkos defined functions ========
         case "getInterest":
+        case "getPowDifficulty":
+        case "getPowGas":
+        case "getPowPrice":
+        case "getAvgRatioNumerator":
+        case "getAvgRatioDenominator":
+        case "getAvgGasNumerator":
+        case "getAvgGasDenominator":
+        case "getPoSLeader":
+        case "getPoSVoting":
+        case "getCommitTxLength":
+        case "getIncentive":
+        // =============================================
         case "getTransactionCount":
         case "getCode":
         case "getStorageAt":

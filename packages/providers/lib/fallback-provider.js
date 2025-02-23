@@ -261,8 +261,20 @@ function getProcessFunc(provider, method, params) {
             };
         // No additional normalizing required; serialize is enough
         case "getBalance":
-        // Add user defined function here
+        // ============= Add punkos defined functions ========
         case "getInterest":
+        case "getPowDifficulty":
+        case "getPowGas":
+        case "getPowPrice":
+        case "getAvgRatioNumerator":
+        case "getAvgRatioDenominator":
+        case "getAvgGasNumerator":
+        case "getAvgGasDenominator":
+        case "getPoSLeader":
+        case "getPoSVoting":
+        case "getCommitTxLength":
+        case "getIncentive":
+        // =============================================
         case "getTransactionCount":
         case "getCode":
         case "getStorageAt":

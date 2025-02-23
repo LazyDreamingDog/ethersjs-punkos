@@ -1548,7 +1548,8 @@ var BaseProvider = /** @class */ (function (_super) {
             });
         });
     };
-    // getInterest here    
+    // add punkos functions
+    // getInterests    
     BaseProvider.prototype.getInterest = function (addressOrName, blockTag) {
         return __awaiter(this, void 0, void 0, function () {
             var params, result;
@@ -1572,6 +1573,346 @@ var BaseProvider = /** @class */ (function (_super) {
                         catch (error) {
                             return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
                                     method: "getInterest",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getPowGas    
+    BaseProvider.prototype.getPowGas = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getPowGas", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getPowGas",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getPowGas    
+    BaseProvider.prototype.getPowPrice = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getPowPrice", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getPowPrice",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getAvgRatioNumerator    
+    BaseProvider.prototype.getAvgRatioNumerator = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getAvgRatioNumerator", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getAvgRatioNumerator",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // gettAvgRatioDenominator    
+    BaseProvider.prototype.gettAvgRatioDenominator = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("gettAvgRatioDenominator", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "gettAvgRatioDenominator",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getAvgGasNumerator    
+    BaseProvider.prototype.getAvgGasNumerator = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getAvgGasNumerator", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getAvgGasNumerator",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getAvgGasNumerator    
+    BaseProvider.prototype.getAvgGasDenominator = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getAvgGasDenominator", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getAvgGasDenominator",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // gePoSLeader    
+    BaseProvider.prototype.gePoSLeader = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("gePoSLeader", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "gePoSLeader",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // gePoSLeader    
+    BaseProvider.prototype.getPoSVoting = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getPoSVoting", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, Uint8Array.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getPoSVoting",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getCommitTxLength    
+    BaseProvider.prototype.getCommitTxLength = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getCommitTxLength", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getCommitTxLength",
+                                    params: params,
+                                    result: result,
+                                    error: error
+                                })];
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        });
+    };
+    // getIncentive    
+    BaseProvider.prototype.getIncentive = function (blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function () {
+            var params, result;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.getNetwork()];
+                    case 1:
+                        _a.sent();
+                        return [4 /*yield*/, (0, properties_1.resolveProperties)({
+                                blockHashOrNumber: blockHashOrNumber,
+                                blockTag: this._getBlockTag(blockTag)
+                            })];
+                    case 2:
+                        params = _a.sent();
+                        return [4 /*yield*/, this.perform("getIncentive", params)];
+                    case 3:
+                        result = _a.sent();
+                        try {
+                            return [2 /*return*/, bignumber_1.BigNumber.from(result)];
+                        }
+                        catch (error) {
+                            return [2 /*return*/, logger.throwError("bad result from backend", logger_1.Logger.errors.SERVER_ERROR, {
+                                    method: "getIncentive",
                                     params: params,
                                     result: result,
                                     error: error

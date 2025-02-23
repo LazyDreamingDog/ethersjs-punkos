@@ -34,7 +34,7 @@ function checkNetworks(networks: Array<Network>): Network {
                 ((result.ensAddress === network.ensAddress) || (result.ensAddress == null && network.ensAddress == null)))) {
 
                 logger.throwArgumentError("provider mismatch", "networks", networks);
-           }
+            }
         } else {
             result = network;
         }
@@ -65,20 +65,20 @@ function median(values: Array<number>, maxDelta?: number): number {
 function serialize(value: any): string {
     if (value === null) {
         return "null";
-    } else if (typeof(value) === "number" || typeof(value) === "boolean") {
+    } else if (typeof (value) === "number" || typeof (value) === "boolean") {
         return JSON.stringify(value);
-    } else if (typeof(value) === "string") {
+    } else if (typeof (value) === "string") {
         return value;
     } else if (BigNumber.isBigNumber(value)) {
         return value.toString();
     } else if (Array.isArray(value)) {
         return JSON.stringify(value.map((i) => serialize(i)));
-    } else if (typeof(value) === "object") {
+    } else if (typeof (value) === "object") {
         const keys = Object.keys(value);
         keys.sort();
         return "{" + keys.map((key) => {
             let v = value[key];
-            if (typeof(v) === "function") {
+            if (typeof (v) === "function") {
                 v = "[function]";
             } else {
                 v = serialize(v);
@@ -87,7 +87,7 @@ function serialize(value: any): string {
         }).join(",") + "}";
     }
 
-    throw new Error("unknown value type: " + typeof(value));
+    throw new Error("unknown value type: " + typeof (value));
 }
 
 // Next request ID to use for emitting debug info
@@ -127,7 +127,7 @@ function stall(duration: number): Staller {
 
     let timer: NodeJS.Timer = null;
     let promise = <Promise<void>>(new Promise((resolve) => {
-        cancel = function() {
+        cancel = function () {
             if (timer) {
                 clearTimeout(timer);
                 timer = null;
@@ -196,10 +196,10 @@ function exposeDebugConfig(config: RunningConfig, now?: number): any {
 }
 
 function normalizedTally(normalize: (value: any) => string, quorum: number): (configs: Array<RunningConfig>) => any {
-    return function(configs: Array<RunningConfig>): any {
+    return function (configs: Array<RunningConfig>): any {
 
         // Count the votes for each result
-        const tally: { [ key: string]: { count: number, result: any } } = { };
+        const tally: { [key: string]: { count: number, result: any } } = {};
         configs.forEach((c) => {
             const value = normalize(c.result);
             if (!tally[value]) { tally[value] = { count: 0, result: c.result }; }
@@ -219,7 +219,7 @@ function normalizedTally(normalize: (value: any) => string, quorum: number): (co
         return undefined;
     }
 }
-function getProcessFunc(provider: FallbackProvider, method: string, params: { [ key: string ]: any }): (configs: Array<RunningConfig>) => any {
+function getProcessFunc(provider: FallbackProvider, method: string, params: { [key: string]: any }): (configs: Array<RunningConfig>) => any {
 
     let normalize = serialize;
 
@@ -229,7 +229,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
             // present, in which case that is probably true and the median
             // is going to be stale soon. In the event of a malicious node,
             // the lie will be true soon enough.
-            return function(configs: Array<RunningConfig>): number {
+            return function (configs: Array<RunningConfig>): number {
                 const values = configs.map((c) => c.result);
 
                 // Get the median block number
@@ -253,7 +253,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
             // Return the middle (round index up) value, similar to median
             // but do not average even entries and choose the higher.
             // Malicious actors must compromise 50% of the nodes to lie.
-            return function(configs: Array<RunningConfig>): BigNumber {
+            return function (configs: Array<RunningConfig>): BigNumber {
                 const values = configs.map((c) => c.result);
                 values.sort();
                 return values[Math.floor(values.length / 2)];
@@ -262,14 +262,27 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
         case "getEtherPrice":
             // Returns the median price. Malicious actors must compromise at
             // least 50% of the nodes to lie (in a meaningful way).
-            return function(configs: Array<RunningConfig>): number {
+            return function (configs: Array<RunningConfig>): number {
                 return median(configs.map((c) => c.result));
             }
 
         // No additional normalizing required; serialize is enough
         case "getBalance":
-        // Add user defined function here
-        case "getInterest":  
+// ============= Add punkos defined functions ========
+        case "getInterest":
+        case "getPowDifficulty":
+        case "getPowGas":
+        case "getPowPrice":
+        case "getAvgRatioNumerator":
+        case "getAvgRatioDenominator":
+        case "getAvgGasNumerator":
+        case "getAvgGasDenominator":
+        case "getPoSLeader":
+        case "getPoSVoting":
+        case "getCommitTxLength":
+        case "getIncentive":
+// =============================================
+
         case "getTransactionCount":
         case "getCode":
         case "getStorageAt":
@@ -281,7 +294,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
         // We drop the confirmations from transactions as it is approximate
         case "getTransaction":
         case "getTransactionReceipt":
-            normalize = function(tx: any): string {
+            normalize = function (tx: any): string {
                 if (tx == null) { return null; }
 
                 tx = shallowCopy(tx);
@@ -294,7 +307,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
         case "getBlock":
             // We drop the confirmations from transactions as it is approximate
             if (params.includeTransactions) {
-                normalize = function(block: BlockWithTransactions): string {
+                normalize = function (block: BlockWithTransactions): string {
                     if (block == null) { return null; }
 
                     block = shallowCopy(block);
@@ -306,14 +319,14 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [ 
                     return serialize(block);
                 };
             } else {
-                normalize = function(block: Block): string {
+                normalize = function (block: Block): string {
                     if (block == null) { return null; }
                     return serialize(block);
                 }
             }
             break;
 
-            default:
+        default:
             throw new Error("unknown method: " + method);
     }
 
@@ -334,7 +347,7 @@ async function waitForSync(config: RunningConfig, blockNumber: number): Promise<
 
     return poll(() => {
         return new Promise((resolve, reject) => {
-            setTimeout(function() {
+            setTimeout(function () {
 
                 // We are synced
                 if (provider.blockNumber >= blockNumber) { return resolve(provider); }
@@ -349,7 +362,7 @@ async function waitForSync(config: RunningConfig, blockNumber: number): Promise<
     }, { oncePoll: provider });
 }
 
-async function getRunner(config: RunningConfig, currentBlockNumber: number, method: string, params: { [ key: string]: any }): Promise<any> {
+async function getRunner(config: RunningConfig, currentBlockNumber: number, method: string, params: { [key: string]: any }): Promise<any> {
     let provider = config.provider;
 
     switch (method) {
@@ -378,7 +391,7 @@ async function getRunner(config: RunningConfig, currentBlockNumber: number, meth
             if (params.blockTag && isHexString(params.blockTag)) {
                 provider = await waitForSync(config, currentBlockNumber)
             }
-            return provider[(params.includeTransactions ? "getBlockWithTransactions": "getBlock")](params.blockTag || params.blockHash);
+            return provider[(params.includeTransactions ? "getBlockWithTransactions" : "getBlock")](params.blockTag || params.blockHash);
         case "call":
         case "estimateGas":
             if (params.blockTag && isHexString(params.blockTag)) {
@@ -422,7 +435,7 @@ export class FallbackProvider extends BaseProvider {
 
         const providerConfigs: Array<FallbackProviderConfig> = providers.map((configOrProvider, index) => {
             if (Provider.isProvider(configOrProvider)) {
-                const stallTimeout = isCommunityResource(configOrProvider) ? 2000: 750;
+                const stallTimeout = isCommunityResource(configOrProvider) ? 2000 : 750;
                 const priority = 1;
                 return Object.freeze({ provider: configOrProvider, weight: 1, stallTimeout, priority });
             }
@@ -431,13 +444,13 @@ export class FallbackProvider extends BaseProvider {
 
             if (config.priority == null) { config.priority = 1; }
             if (config.stallTimeout == null) {
-                config.stallTimeout = isCommunityResource(configOrProvider) ? 2000: 750;
+                config.stallTimeout = isCommunityResource(configOrProvider) ? 2000 : 750;
             }
             if (config.weight == null) { config.weight = 1; }
 
             const weight = config.weight;
             if (weight % 1 || weight > 512 || weight < 1) {
-                logger.throwArgumentError("invalid weight; must be integer in [1, 512]", `providers[${ index }].weight`, weight);
+                logger.throwArgumentError("invalid weight; must be integer in [1, 512]", `providers[${index}].weight`, weight);
             }
 
             return Object.freeze(config);
@@ -491,7 +504,7 @@ export class FallbackProvider extends BaseProvider {
             // Any success is good enough (other errors are likely "already seen" errors
             for (let i = 0; i < results.length; i++) {
                 const result = results[i];
-                if (typeof(result) === "string") { return result; }
+                if (typeof (result) === "string") { return result; }
             }
 
             // They were all an error; pick the first error
@@ -520,7 +533,7 @@ export class FallbackProvider extends BaseProvider {
 
             // Compute the inflight weight (exclude anything past)
             let inflightWeight = configs.filter((c) => (c.runner && ((t0 - c.start) < c.stallTimeout)))
-                                        .reduce((accum, c) => (accum + c.weight), 0);
+                .reduce((accum, c) => (accum + c.weight), 0);
 
             // Start running enough to meet quorum
             while (inflightWeight < this.quorum && i < configs.length) {
@@ -544,7 +557,7 @@ export class FallbackProvider extends BaseProvider {
                             request: { method: method, params: deepCopy(params) },
                             provider: this
                         });
-                     }
+                    }
 
                 }, (error) => {
                     config.done = true;
@@ -575,7 +588,7 @@ export class FallbackProvider extends BaseProvider {
             }
 
             // Wait for anything meaningful to finish or stall out
-            const waiting: Array<Promise<any>> = [ ];
+            const waiting: Array<Promise<any>> = [];
             configs.forEach((c) => {
                 if (c.done || !c.runner) { return; }
                 waiting.push(c.runner);
@@ -612,7 +625,7 @@ export class FallbackProvider extends BaseProvider {
                 }
 
                 return accum;
-            }, <{ [ code: string ]: { error: Error, weight: number } }>({ }));
+            }, <{ [code: string]: { error: Error, weight: number } }>({}));
 
             Object.keys(errors).forEach((errorCode: string) => {
                 const tally = errors[errorCode];
@@ -626,7 +639,7 @@ export class FallbackProvider extends BaseProvider {
 
                 const e = <any>(tally.error);
 
-                const props: { [ name: string ]: any } = { };
+                const props: { [name: string]: any } = {};
                 ForwardProperties.forEach((name) => {
                     if (e[name] == null) { return; }
                     props[name] = e[name];

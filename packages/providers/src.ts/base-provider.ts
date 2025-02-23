@@ -31,11 +31,11 @@ const MAX_CCIP_REDIRECTS = 10;
 // Event Serializeing
 
 function checkTopic(topic: string): string {
-     if (topic == null) { return "null"; }
-     if (hexDataLength(topic) !== 32) {
-         logger.throwArgumentError("invalid topic", "topic", topic);
-     }
-     return topic.toLowerCase();
+    if (topic == null) { return "null"; }
+    if (hexDataLength(topic) !== 32) {
+        logger.throwArgumentError("invalid topic", "topic", topic);
+    }
+    return topic.toLowerCase();
 }
 
 function serializeTopics(topics: Array<string | Array<string>>): string {
@@ -47,7 +47,7 @@ function serializeTopics(topics: Array<string | Array<string>>): string {
         if (Array.isArray(topic)) {
 
             // Only track unique OR-topics
-            const unique: { [ topic: string ]: boolean } = { }
+            const unique: { [topic: string]: boolean } = {}
             topic.forEach((topic) => {
                 unique[checkTopic(topic)] = true;
             });
@@ -65,21 +65,21 @@ function serializeTopics(topics: Array<string | Array<string>>): string {
 }
 
 function deserializeTopics(data: string): Array<string | Array<string>> {
-    if (data === "") { return [ ]; }
+    if (data === "") { return []; }
 
     return data.split(/&/g).map((topic) => {
-        if (topic === "") { return [ ]; }
+        if (topic === "") { return []; }
 
         const comps = topic.split("|").map((topic) => {
-            return ((topic === "null") ? null: topic);
+            return ((topic === "null") ? null : topic);
         });
 
-        return ((comps.length === 1) ? comps[0]: comps);
+        return ((comps.length === 1) ? comps[0] : comps);
     });
 }
 
 function getEventTag(eventName: EventType): string {
-    if (typeof(eventName) === "string") {
+    if (typeof (eventName) === "string") {
         eventName = eventName.toLowerCase();
 
         if (hexDataLength(eventName) === 32) {
@@ -97,7 +97,7 @@ function getEventTag(eventName: EventType): string {
         logger.warn("not implemented");
         throw new Error("not implemented");
 
-    } else if (eventName && typeof(eventName) === "object") {
+    } else if (eventName && typeof (eventName) === "object") {
         return "filter:" + (eventName.address || "*") + ":" + serializeTopics(eventName.topics || []);
     }
 
@@ -134,7 +134,7 @@ function stall(duration: number): Promise<void> {
  *   - transaction hash
  */
 
-const PollableEvents = [ "block", "network", "pending", "poll" ];
+const PollableEvents = ["block", "network", "pending", "poll"];
 
 export class Event {
     readonly listener: Listener;
@@ -156,9 +156,9 @@ export class Event {
     get event(): EventType {
         switch (this.type) {
             case "tx":
-               return this.hash;
+                return this.hash;
             case "filter":
-               return this.filter;
+                return this.filter;
         }
         return this.tag;
     }
@@ -179,7 +179,7 @@ export class Event {
         const address = comps[1];
 
         const topics = deserializeTopics(comps[2]);
-        const filter: Filter = { };
+        const filter: Filter = {};
 
         if (topics.length > 0) { filter.topics = topics; }
         if (address && address !== "*") { filter.address = address; }
@@ -228,12 +228,12 @@ type CoinInfo = {
 };
 
 // https://github.com/satoshilabs/slips/blob/master/slip-0044.md
-const coinInfos: { [ coinType: string ]: CoinInfo } = {
-    "0":   { symbol: "btc",  p2pkh: 0x00, p2sh: 0x05, prefix: "bc" },
-    "2":   { symbol: "ltc",  p2pkh: 0x30, p2sh: 0x32, prefix: "ltc" },
-    "3":   { symbol: "doge", p2pkh: 0x1e, p2sh: 0x16 },
-    "60":  { symbol: "eth",  ilk: "eth" },
-    "61":  { symbol: "etc",  ilk: "eth" },
+const coinInfos: { [coinType: string]: CoinInfo } = {
+    "0": { symbol: "btc", p2pkh: 0x00, p2sh: 0x05, prefix: "bc" },
+    "2": { symbol: "ltc", p2pkh: 0x30, p2sh: 0x32, prefix: "ltc" },
+    "3": { symbol: "doge", p2pkh: 0x1e, p2sh: 0x16 },
+    "60": { symbol: "eth", ilk: "eth" },
+    "61": { symbol: "etc", ilk: "eth" },
     "700": { symbol: "xdai", ilk: "eth" },
 };
 
@@ -243,7 +243,7 @@ function bytes32ify(value: number): string {
 
 // Compute the Base58Check encoded data (checksum is first 4 bytes of sha256d)
 function base58Encode(data: Uint8Array): string {
-    return Base58.encode(concat([ data, hexDataSlice(sha256(sha256(data)), 0, 4) ]));
+    return Base58.encode(concat([data, hexDataSlice(sha256(sha256(data)), 0, 4)]));
 }
 
 export interface Avatar {
@@ -262,7 +262,7 @@ const matchers = [
 function _parseString(result: string, start: number): null | string {
     try {
         return toUtf8String(_parseBytes(result, start));
-    } catch(error) { }
+    } catch (error) { }
     return null;
 }
 
@@ -285,7 +285,7 @@ function getIpfsLink(link: string): string {
         logger.throwArgumentError("unsupported IPFS format", "link", link);
     }
 
-    return `https:/\/gateway.ipfs.io/ipfs/${ link }`;
+    return `https:/\/gateway.ipfs.io/ipfs/${link}`;
 }
 
 function numPad(value: number): Uint8Array {
@@ -307,7 +307,7 @@ function bytesPad(value: Uint8Array): Uint8Array {
 
 // ABI Encodes a series of (bytes, bytes, ...)
 function encodeBytes(datas: Array<BytesLike>) {
-    const result: Array<Uint8Array> = [ ];
+    const result: Array<Uint8Array> = [];
 
     let byteCount = 0;
 
@@ -376,7 +376,7 @@ export class Resolver implements EnsResolver {
         const tx = {
             to: this.address,
             ccipReadEnabled: true,
-            data: hexConcat([ selector, namehash(this.name), (parameters || "0x") ])
+            data: hexConcat([selector, namehash(this.name), (parameters || "0x")])
         };
 
         // Wildcard support; use EIP-2544 to resolve the request
@@ -385,7 +385,7 @@ export class Resolver implements EnsResolver {
             parseBytes = true;
 
             // selector("resolve(bytes,bytes)")
-            tx.data = hexConcat([ "0x9061b923", encodeBytes([ dnsEncode(this.name), tx.data ]) ]);
+            tx.data = hexConcat(["0x9061b923", encodeBytes([dnsEncode(this.name), tx.data])]);
         }
 
         try {
@@ -413,8 +413,8 @@ export class Resolver implements EnsResolver {
         const coinInfo = coinInfos[String(coinType)];
 
         if (coinInfo == null) {
-            logger.throwError(`unsupported coin type: ${ coinType }`, Logger.errors.UNSUPPORTED_OPERATION, {
-                operation: `getAddress(${ coinType })`
+            logger.throwError(`unsupported coin type: ${coinType}`, Logger.errors.UNSUPPORTED_OPERATION, {
+                operation: `getAddress(${coinType})`
             });
         }
 
@@ -430,7 +430,7 @@ export class Resolver implements EnsResolver {
             if (p2pkh) {
                 const length = parseInt(p2pkh[1], 16);
                 if (p2pkh[2].length === length * 2 && length >= 1 && length <= 75) {
-                    return base58Encode(concat([ [ coinInfo.p2pkh ], ("0x" + p2pkh[2]) ]));
+                    return base58Encode(concat([[coinInfo.p2pkh], ("0x" + p2pkh[2])]));
                 }
             }
         }
@@ -441,7 +441,7 @@ export class Resolver implements EnsResolver {
             if (p2sh) {
                 const length = parseInt(p2sh[1], 16);
                 if (p2sh[2].length === length * 2 && length >= 1 && length <= 75) {
-                    return base58Encode(concat([ [ coinInfo.p2sh ], ("0x" + p2sh[2]) ]));
+                    return base58Encode(concat([[coinInfo.p2sh], ("0x" + p2sh[2])]));
                 }
             }
         }
@@ -501,7 +501,7 @@ export class Resolver implements EnsResolver {
 
         if (address == null) {
             logger.throwError(`invalid or unsupported coin data`, Logger.errors.UNSUPPORTED_OPERATION, {
-                operation: `getAddress(${ coinType })`,
+                operation: `getAddress(${coinType})`,
                 coinType: coinType,
                 data: hexBytes
             });
@@ -511,7 +511,7 @@ export class Resolver implements EnsResolver {
     }
 
     async getAvatar(): Promise<null | Avatar> {
-        const linkage: Array<{ type: string, content: string }> = [ { type: "name", content: this.name } ];
+        const linkage: Array<{ type: string, content: string }> = [{ type: "name", content: this.name }];
         try {
             // test data for ricmoo.eth
             //const avatar = "eip155:1/erc721:0x265385c7f4132228A0d54EB1A9e7460b91c0cC68/29233";
@@ -540,7 +540,7 @@ export class Resolver implements EnsResolver {
                     case "erc721":
                     case "erc1155": {
                         // Depending on the ERC type, use tokenURI(uint256) or url(uint256)
-                        const selector = (scheme === "erc721") ? "0xc87b56dd": "0x0e89341c";
+                        const selector = (scheme === "erc721") ? "0xc87b56dd" : "0x0e89341c";
                         linkage.push({ type: scheme, content: avatar });
 
                         // The owner of this name
@@ -556,7 +556,7 @@ export class Resolver implements EnsResolver {
                         if (scheme === "erc721") {
                             // ownerOf(uint256 tokenId)
                             const tokenOwner = this.provider.formatter.callAddress(await this.provider.call({
-                                to: addr, data: hexConcat([ "0x6352211e", tokenId ])
+                                to: addr, data: hexConcat(["0x6352211e", tokenId])
                             }));
                             if (owner !== tokenOwner) { return null; }
                             linkage.push({ type: "owner", content: tokenOwner });
@@ -564,7 +564,7 @@ export class Resolver implements EnsResolver {
                         } else if (scheme === "erc1155") {
                             // balanceOf(address owner, uint256 tokenId)
                             const balance = BigNumber.from(await this.provider.call({
-                                to: addr, data: hexConcat([ "0x00fdd58e", hexZeroPad(owner, 32), tokenId ])
+                                to: addr, data: hexConcat(["0x00fdd58e", hexZeroPad(owner, 32), tokenId])
                             }));
                             if (balance.isZero()) { return null; }
                             linkage.push({ type: "balance", content: balance.toString() });
@@ -573,7 +573,7 @@ export class Resolver implements EnsResolver {
                         // Call the token contract for the metadata URL
                         const tx = {
                             to: this.provider.formatter.address(comps[0]),
-                            data: hexConcat([ selector, tokenId ])
+                            data: hexConcat([selector, tokenId])
                         };
 
                         let metadataUrl = _parseString(await this.provider.call(tx), 0);
@@ -600,7 +600,7 @@ export class Resolver implements EnsResolver {
 
                         // Pull the image URL out
                         let imageUrl = metadata.image;
-                        if (typeof(imageUrl) !== "string") { return null; }
+                        if (typeof (imageUrl) !== "string") { return null; }
 
                         if (imageUrl.match(/^(https:\/\/|data:)/i)) {
                             // Allow
@@ -681,11 +681,11 @@ export class Resolver implements EnsResolver {
 
         // The nodehash consumes the first slot, so the string pointer targets
         // offset 64, with the length at offset 64 and data starting at offset 96
-        keyBytes = concat([ bytes32ify(64), bytes32ify(keyBytes.length), keyBytes ]);
+        keyBytes = concat([bytes32ify(64), bytes32ify(keyBytes.length), keyBytes]);
 
         // Pad to word-size (32 bytes)
         if ((keyBytes.length % 32) !== 0) {
-            keyBytes = concat([ keyBytes, hexZeroPad("0x", 32 - (key.length % 32)) ])
+            keyBytes = concat([keyBytes, hexZeroPad("0x", 32 - (key.length % 32))])
         }
 
         const hexBytes = await this._fetchBytes("0x59d1d43c", hexlify(keyBytes));
@@ -717,7 +717,7 @@ export class BaseProvider extends Provider implements EnsProvider {
     //   - t:{hash}    - Transaction hash
     //   - b:{hash}    - BlockHash
     //   - block       - The most recent emitted block
-    _emitted: { [ eventName: string ]: number | "pending" };
+    _emitted: { [eventName: string]: number | "pending" };
 
     _pollingInterval: number;
     _poller: NodeJS.Timer;
@@ -813,7 +813,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             // This should never happen; every Provider sub-class should have
             // suggested a network by here (or have thrown).
             if (!network) {
-                logger.throwError("no network detected", Logger.errors.UNKNOWN_ERROR, { });
+                logger.throwError("no network detected", Logger.errors.UNKNOWN_ERROR, {});
             }
 
             // Possible this call stacked so do not call defineReadOnly again
@@ -857,7 +857,7 @@ export class BaseProvider extends Provider implements EnsProvider {
 
     // @TODO: Remove this and just use getNetwork
     static getNetwork(network: Networkish): Network {
-        return getNetwork((network == null) ? "homestead": network);
+        return getNetwork((network == null) ? "homestead" : network);
     }
 
     async ccipReadFetch(tx: Transaction, calldata: string, urls: Array<string>): Promise<null | string> {
@@ -866,7 +866,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         const sender = tx.to.toLowerCase();
         const data = calldata.toLowerCase();
 
-        const errorMessages: Array<string> = [ ];
+        const errorMessages: Array<string> = [];
 
         for (let i = 0; i < urls.length; i++) {
             const url = urls[i];
@@ -875,7 +875,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             const href = url.replace("{sender}", sender).replace("{data}", data);
 
             // If no {data} is present, use POST; otherwise GET
-            const json: string | null = (url.indexOf("{data}") >= 0) ? null: JSON.stringify({ data, sender });
+            const json: string | null = (url.indexOf("{data}") >= 0) ? null : JSON.stringify({ data, sender });
 
             const result = await fetchJson({ url: href, errorPassThrough: true }, json, (value, response) => {
                 value.status = response.statusCode;
@@ -888,14 +888,14 @@ export class BaseProvider extends Provider implements EnsProvider {
 
             // 4xx indicates the result is not present; stop
             if (result.status >= 400 && result.status < 500) {
-                return logger.throwError(`response not found during CCIP fetch: ${ errorMessage }`, Logger.errors.SERVER_ERROR, { url, errorMessage });
+                return logger.throwError(`response not found during CCIP fetch: ${errorMessage}`, Logger.errors.SERVER_ERROR, { url, errorMessage });
             }
 
             // 5xx indicates server issue; try the next url
             errorMessages.push(errorMessage);
         }
 
-        return logger.throwError(`error encountered during CCIP fetch: ${ errorMessages.map((m) => JSON.stringify(m)).join(", ") }`, Logger.errors.SERVER_ERROR, {
+        return logger.throwError(`error encountered during CCIP fetch: ${errorMessages.map((m) => JSON.stringify(m)).join(", ")}`, Logger.errors.SERVER_ERROR, {
             urls, errorMessages
         });
     }
@@ -924,7 +924,7 @@ export class BaseProvider extends Provider implements EnsProvider {
                     // Too old; fetch a new value
                     break;
 
-                } catch(error) {
+                } catch (error) {
 
                     // The fetch rejected; if we are the first to get the
                     // rejection, drop through so we replace it with a new
@@ -940,7 +940,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         const reqTime = getTime();
 
         const checkInternalBlockNumber = resolveProperties({
-            blockNumber: this.perform("getBlockNumber", { }),
+            blockNumber: this.perform("getBlockNumber", {}),
             networkError: this.getNetwork().then((network) => (null), (error) => (error))
         }).then(({ blockNumber, networkError }) => {
             if (networkError) {
@@ -1004,7 +1004,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
 
         if (Math.abs((<number>(this._emitted.block)) - blockNumber) > 1000) {
-            logger.warn(`network block skew detected; skipping block events (emitted=${ this._emitted.block } blockNumber${ blockNumber })`);
+            logger.warn(`network block skew detected; skipping block events (emitted=${this._emitted.block} blockNumber${blockNumber})`);
             this.emit("error", logger.makeError("network block skew detected", Logger.errors.NETWORK_ERROR, {
                 blockNumber: blockNumber,
                 event: "blockSkew",
@@ -1201,7 +1201,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             this._setFastBlockNumber(blockNumber);
         }, (error) => { });
 
-        return (this._fastBlockNumber != null) ? this._fastBlockNumber: -1;
+        return (this._fastBlockNumber != null) ? this._fastBlockNumber : -1;
     }
 
     get polling(): boolean {
@@ -1240,7 +1240,7 @@ export class BaseProvider extends Provider implements EnsProvider {
     }
 
     set pollingInterval(value: number) {
-        if (typeof(value) !== "number" || value <= 0 || parseInt(String(value)) != value) {
+        if (typeof (value) !== "number" || value <= 0 || parseInt(String(value)) != value) {
             throw new Error("invalid polling interval");
         }
 
@@ -1284,21 +1284,21 @@ export class BaseProvider extends Provider implements EnsProvider {
     }
 
     async waitForTransaction(transactionHash: string, confirmations?: number, timeout?: number): Promise<TransactionReceipt> {
-        return this._waitForTransaction(transactionHash, (confirmations == null) ? 1: confirmations, timeout || 0, null);
+        return this._waitForTransaction(transactionHash, (confirmations == null) ? 1 : confirmations, timeout || 0, null);
     }
 
     async _waitForTransaction(transactionHash: string, confirmations: number, timeout: number, replaceable: { data: string, from: string, nonce: number, to: string, value: BigNumber, startBlock: number }): Promise<TransactionReceipt> {
         const receipt = await this.getTransactionReceipt(transactionHash);
 
         // Receipt is already good
-        if ((receipt ? receipt.confirmations: 0) >= confirmations) { return receipt; }
+        if ((receipt ? receipt.confirmations : 0) >= confirmations) { return receipt; }
 
         // Poll until the receipt is good...
         return new Promise((resolve, reject) => {
             const cancelFuncs: Array<() => void> = [];
 
             let done = false;
-            const alreadyDone = function() {
+            const alreadyDone = function () {
                 if (done) { return true; }
                 done = true;
                 cancelFuncs.forEach((func) => { func(); });
@@ -1372,7 +1372,7 @@ export class BaseProvider extends Provider implements EnsProvider {
                                         let reason = "replaced";
                                         if (tx.data === replaceable.data && tx.to === replaceable.to && tx.value.eq(replaceable.value)) {
                                             reason = "repriced";
-                                        } else  if (tx.data === "0x" && tx.from === tx.to && tx.value.isZero()) {
+                                        } else if (tx.data === "0x" && tx.from === tx.to && tx.value.isZero()) {
                                             reason = "cancelled"
                                         }
 
@@ -1409,7 +1409,7 @@ export class BaseProvider extends Provider implements EnsProvider {
                 });
             }
 
-            if (typeof(timeout) === "number" && timeout > 0) {
+            if (typeof (timeout) === "number" && timeout > 0) {
                 const timer = setTimeout(() => {
                     if (alreadyDone()) { return; }
                     reject(logger.makeError("timeout exceeded", Logger.errors.TIMEOUT, { timeout: timeout }));
@@ -1428,7 +1428,7 @@ export class BaseProvider extends Provider implements EnsProvider {
     async getGasPrice(): Promise<BigNumber> {
         await this.getNetwork();
 
-        const result = await this.perform("getGasPrice", { });
+        const result = await this.perform("getGasPrice", {});
         try {
             return BigNumber.from(result);
         } catch (error) {
@@ -1457,7 +1457,8 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
-    // getInterest here    
+    // add punkos functions
+    // getInterests    
     async getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
         await this.getNetwork();
         const params = await resolveProperties({
@@ -1476,7 +1477,196 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
+    // getPowGas    
+    async getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
 
+        const result = await this.perform("getPowGas", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPowGas",
+                params, result, error
+            });
+        }
+    }
+
+    // getPowGas    
+    async getPowPrice(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getPowPrice", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPowPrice",
+                params, result, error
+            });
+        }
+    }
+
+    // getAvgRatioNumerator    
+    async getAvgRatioNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getAvgRatioNumerator", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getAvgRatioNumerator",
+                params, result, error
+            });
+        }
+    }
+
+
+    // gettAvgRatioDenominator    
+    async gettAvgRatioDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("gettAvgRatioDenominator", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "gettAvgRatioDenominator",
+                params, result, error
+            });
+        }
+    }
+
+    // getAvgGasNumerator    
+    async getAvgGasNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getAvgGasNumerator", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getAvgGasNumerator",
+                params, result, error
+            });
+        }
+    }
+
+    // getAvgGasNumerator    
+    async getAvgGasDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getAvgGasDenominator", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getAvgGasDenominator",
+                params, result, error
+            });
+        }
+    }
+    // gePoSLeader    
+    async gePoSLeader(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("gePoSLeader", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "gePoSLeader",
+                params, result, error
+            });
+        }
+    }
+
+    // gePoSLeader    
+    async getPoSVoting(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<Uint8Array> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getPoSVoting", params);
+        try {
+            return Uint8Array.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPoSVoting",
+                params, result, error
+            });
+        }
+    }
+
+    // getCommitTxLength    
+    async getCommitTxLength(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getCommitTxLength", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getCommitTxLength",
+                params, result, error
+            });
+        }
+    }
+
+
+    // getIncentive    
+    async getIncentive(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getIncentive", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getIncentive",
+                params, result, error
+            });
+        }
+    }
     async getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number> {
         await this.getNetwork();
         const params = await resolveProperties({
@@ -1597,21 +1787,21 @@ export class BaseProvider extends Provider implements EnsProvider {
     async _getTransactionRequest(transaction: Deferrable<TransactionRequest>): Promise<Transaction> {
         const values: any = await transaction;
 
-        const tx: any = { };
+        const tx: any = {};
 
         ["from", "to"].forEach((key) => {
             if (values[key] == null) { return; }
-            tx[key] = Promise.resolve(values[key]).then((v) => (v ? this._getAddress(v): null))
+            tx[key] = Promise.resolve(values[key]).then((v) => (v ? this._getAddress(v) : null))
         });
 
         ["gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "value"].forEach((key) => {
             if (values[key] == null) { return; }
-            tx[key] = Promise.resolve(values[key]).then((v) => (v ? BigNumber.from(v): null));
+            tx[key] = Promise.resolve(values[key]).then((v) => (v ? BigNumber.from(v) : null));
         });
 
         ["type"].forEach((key) => {
             if (values[key] == null) { return; }
-            tx[key] = Promise.resolve(values[key]).then((v) => ((v != null) ? v: null));
+            tx[key] = Promise.resolve(values[key]).then((v) => ((v != null) ? v : null));
         });
 
         if (values.accessList) {
@@ -1620,7 +1810,7 @@ export class BaseProvider extends Provider implements EnsProvider {
 
         ["data"].forEach((key) => {
             if (values[key] == null) { return; }
-            tx[key] = Promise.resolve(values[key]).then((v) => (v ? hexlify(v): null));
+            tx[key] = Promise.resolve(values[key]).then((v) => (v ? hexlify(v) : null));
         });
 
         return this.formatter.transactionRequest(await resolveProperties(tx));
@@ -1629,7 +1819,7 @@ export class BaseProvider extends Provider implements EnsProvider {
     async _getFilter(filter: Filter | FilterByBlockHash | Promise<Filter | FilterByBlockHash>): Promise<Filter | FilterByBlockHash> {
         filter = await filter;
 
-        const result: any = { };
+        const result: any = {};
 
         if (filter.address != null) {
             result.address = this._getAddress(filter.address);
@@ -1718,7 +1908,7 @@ export class BaseProvider extends Provider implements EnsProvider {
 
                 const tx = {
                     to: txSender,
-                    data: hexConcat([ callbackSelector, encodeBytes([ ccipResult, extraData ]) ])
+                    data: hexConcat([callbackSelector, encodeBytes([ccipResult, extraData])])
                 };
 
                 return this._call(tx, blockTag, attempt + 1);
@@ -1746,7 +1936,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             blockTag: this._getBlockTag(blockTag),
             ccipReadEnabled: Promise.resolve(transaction.ccipReadEnabled)
         });
-        return this._call(resolved.transaction, resolved.blockTag, resolved.ccipReadEnabled ? 0: -1);
+        return this._call(resolved.transaction, resolved.blockTag, resolved.ccipReadEnabled ? 0 : -1);
     }
 
     async estimateGas(transaction: Deferrable<TransactionRequest>): Promise<BigNumber> {
@@ -1768,14 +1958,14 @@ export class BaseProvider extends Provider implements EnsProvider {
 
     async _getAddress(addressOrName: string | Promise<string>): Promise<string> {
         addressOrName = await addressOrName;
-        if (typeof(addressOrName) !== "string") {
+        if (typeof (addressOrName) !== "string") {
             logger.throwArgumentError("invalid address or ENS name", "name", addressOrName);
         }
 
         const address = await this.resolveName(addressOrName);
         if (address == null) {
             logger.throwError("ENS name not configured", Logger.errors.UNSUPPORTED_OPERATION, {
-                operation: `resolveName(${ JSON.stringify(addressOrName) })`
+                operation: `resolveName(${JSON.stringify(addressOrName)})`
             });
         }
         return address;
@@ -1950,13 +2140,13 @@ export class BaseProvider extends Provider implements EnsProvider {
 
     async getEtherPrice(): Promise<number> {
         await this.getNetwork();
-        return this.perform("getEtherPrice", { });
+        return this.perform("getEtherPrice", {});
     }
 
     async _getBlockTag(blockTag: BlockTag | Promise<BlockTag>): Promise<BlockTag> {
         blockTag = await blockTag;
 
-        if (typeof(blockTag) === "number" && blockTag < 0) {
+        if (typeof (blockTag) === "number" && blockTag < 0) {
             if (blockTag % 1) {
                 logger.throwArgumentError("invalid BlockTag", "blockTag", blockTag);
             }
@@ -2038,7 +2228,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             if (isHexString(name)) { throw error; }
         }
 
-        if (typeof(name) !== "string") {
+        if (typeof (name) !== "string") {
             logger.throwArgumentError("invalid ENS name", "name", name);
         }
 
@@ -2147,7 +2337,7 @@ export class BaseProvider extends Provider implements EnsProvider {
     emit(eventName: EventType, ...args: Array<any>): boolean {
         let result = false;
 
-        let stopped: Array<Event> = [ ];
+        let stopped: Array<Event> = [];
 
         let eventTag = getEventTag(eventName);
         this._events = this._events.filter((event) => {
@@ -2197,7 +2387,7 @@ export class BaseProvider extends Provider implements EnsProvider {
             return this.removeAllListeners(eventName);
         }
 
-        const stopped: Array<Event> = [ ];
+        const stopped: Array<Event> = [];
 
         let found = false;
 
@@ -2216,11 +2406,11 @@ export class BaseProvider extends Provider implements EnsProvider {
     }
 
     removeAllListeners(eventName?: EventType): this {
-        let stopped: Array<Event> = [ ];
+        let stopped: Array<Event> = [];
         if (eventName == null) {
             stopped = this._events;
 
-            this._events = [ ];
+            this._events = [];
         } else {
             const eventTag = getEventTag(eventName);
             this._events = this._events.filter((event) => {

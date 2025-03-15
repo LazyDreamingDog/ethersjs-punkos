@@ -219,6 +219,7 @@ function getProcessFunc(provider, method, params) {
         case "getBalance":
         // ============= Add punkos defined functions ========
         case "getInterest":
+        case "getSecurityLevel":
         case "getPowDifficulty":
         case "getPowGas":
         case "getPowPrice":

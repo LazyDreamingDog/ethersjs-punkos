@@ -236,10 +236,34 @@ Object.keys(blockchainData).forEach(function (network) {
         }, test);
         addObjectTest("getPowGas", function (provider) {
             return provider.getPowGas("latest");
-        }, test);
+        }, 0);
         addObjectTest("getPowPrice", function (provider) {
             return provider.getPowPrice("latest");
-        }, test);
+        }, 0);
+        addObjectTest("getAvgRatioNumerator", function (provider) {
+            return provider.getAvgRatioNumerator("latest");
+        }, 0);
+        addObjectTest("gettAvgRatioDenominator", function (provider) {
+            return provider.gettAvgRatioDenominator("latest");
+        }, 0);
+        addObjectTest("getAvgGasNumerator", function (provider) {
+            return provider.getAvgGasNumerator("latest");
+        }, 0);
+        addObjectTest("getAvgGasDenominator", function (provider) {
+            return provider.getAvgGasDenominator("latest");
+        }, 0);
+        addObjectTest("gePoSLeader", function (provider) {
+            return provider.gePoSLeader("latest");
+        }, 0);
+        addObjectTest("getPoSVoting", function (provider) {
+            return provider.getPoSVoting("latest");
+        }, 0);
+        addObjectTest("getCommitTxLength", function (provider) {
+            return provider.getCommitTxLength("latest");
+        }, 0);
+        addObjectTest("getIncentive", function (provider) {
+            return provider.getIncentive("latest");
+        }, 0);
     });
     // TODO 单节点网络测试的哈希不确定
     // tests.blocks.forEach((test) => {

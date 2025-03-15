@@ -260,8 +260,12 @@ export abstract class Provider implements OnceBlockable {
     abstract getBalance(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
 
     // Add punkos defined functions
-    // GetPowDifficulty 返回指定区块的PowDifficulty
+    // 获取利息
     abstract getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    // 获取安全等级
+    abstract getSecurityLevel(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    // GetPowDifficulty 返回指定区块的PowDifficulty
+    abstract getPowDifficulty(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
 	// GetPowGas 返回指定区块的PowGas
     abstract getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
 	// GetPowPrice 返回指定区块的PowPrice

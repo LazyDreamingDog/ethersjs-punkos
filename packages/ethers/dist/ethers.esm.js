@@ -20520,8 +20520,47 @@ class BaseProvider extends Provider {
             }
         });
     }
+    getSecurityLevel(addressOrName, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getSecurityLevel", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getSecurityLevel",
+                    params, result, error
+                });
+            }
+        });
+    }
     // getPowGas    
     getPowGas(blockHashOrNumber, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPowGas", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPowGas",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getPowDifficulty    
+    getPowDifficulty(blockHashOrNumber, blockTag) {
         return __awaiter$9(this, void 0, void 0, function* () {
             yield this.getNetwork();
             const params = yield resolveProperties({
@@ -21958,6 +21997,9 @@ class JsonRpcProvider extends BaseProvider {
             // add getInterest params construct here
             case "getInterest":
                 return ["eth_getInterest", [getLowerCase(params.address), params.blockTag]];
+            // getSecurityLevel
+            case "getSecurityLevel":
+                return ["eth_getSecurityLevel", [getLowerCase(params.address), params.blockTag]];
             // GetPowDifficulty 返回指定区块的PowDifficulty
             case "getPowDifficulty":
                 return ["eth_getPowDifficulty", [params.blockHashOrNumber,]];
@@ -23362,6 +23404,7 @@ function getProcessFunc(provider, method, params) {
         case "getBalance":
         // ============= Add punkos defined functions ========
         case "getInterest":
+        case "getSecurityLevel":
         case "getPowDifficulty":
         case "getPowGas":
         case "getPowPrice":

@@ -1289,8 +1289,47 @@ export class BaseProvider extends Provider {
             }
         });
     }
+    getSecurityLevel(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getSecurityLevel", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getSecurityLevel",
+                    params, result, error
+                });
+            }
+        });
+    }
     // getPowGas    
     getPowGas(blockHashOrNumber, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                blockHashOrNumber: blockHashOrNumber,
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPowGas", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPowGas",
+                    params, result, error
+                });
+            }
+        });
+    }
+    // getPowDifficulty    
+    getPowDifficulty(blockHashOrNumber, blockTag) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getNetwork();
             const params = yield resolveProperties({

@@ -1457,6 +1457,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
+   
     // add punkos functions
     // getInterests    
     async getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
@@ -1477,8 +1478,46 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
+     
+    async getSecurityLevel(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getSecurityLevel", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getSecurityLevel",
+                params, result, error
+            });
+        }
+    }
+    
     // getPowGas    
     async getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            blockHashOrNumber: blockHashOrNumber,
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getPowGas", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPowGas",
+                params, result, error
+            });
+        }
+    }
+
+    // getPowDifficulty    
+    async getPowDifficulty(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
         await this.getNetwork();
         const params = await resolveProperties({
             blockHashOrNumber: blockHashOrNumber,

@@ -187,22 +187,34 @@ Object.keys(blockchainData).forEach((network) => {
         }, test);
         addObjectTest(`getPowGas`, (provider) => {
             return provider.getPowGas("latest");
-        }, test);
+        }, 0);
         addObjectTest(`getPowPrice`, (provider) => {
             return provider.getPowPrice("latest");
-        }, test);
+        }, 0);
         addObjectTest(`getAvgRatioNumerator`, (provider) => {
             return provider.getAvgRatioNumerator("latest");
-        }, test);
+        }, 0);
         addObjectTest(`gettAvgRatioDenominator`, (provider) => {
             return provider.gettAvgRatioDenominator("latest");
-        }, test);
+        }, 0);
         addObjectTest(`getAvgGasNumerator`, (provider) => {
             return provider.getAvgGasNumerator("latest");
-        }, test);
+        }, 0);
         addObjectTest(`getAvgGasDenominator`, (provider) => {
             return provider.getAvgGasDenominator("latest");
-        }, test);
+        }, 0);
+        addObjectTest(`gePoSLeader`, (provider) => {
+            return provider.gePoSLeader("latest");
+        }, 0);
+        addObjectTest(`getPoSVoting`, (provider) => {
+            return provider.getPoSVoting("latest");
+        }, 0);
+        addObjectTest(`getCommitTxLength`, (provider) => {
+            return provider.getCommitTxLength("latest");
+        }, 0);
+        addObjectTest(`getIncentive`, (provider) => {
+            return provider.getIncentive("latest");
+        }, 0);
     });
     // TODO 单节点网络测试的哈希不确定
     // tests.blocks.forEach((test) => {

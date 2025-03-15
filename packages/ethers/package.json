@@ -53,7 +53,7 @@
   "main": "./lib/index.js",
   "module": "./lib.esm/index.js",
   "name": "ethers-punkos",
-  "version": "5.7.2-interest.1",
+  "version": "5.7.2-interest.2",
   "repository": {
     "directory": "packages/ethers",
     "type": "git",

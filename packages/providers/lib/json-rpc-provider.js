@@ -681,6 +681,9 @@ var JsonRpcProvider = /** @class */ (function (_super) {
             // add getInterest params construct here
             case "getInterest":
                 return ["eth_getInterest", [getLowerCase(params.address), params.blockTag]];
+            // getSecurityLevel
+            case "getSecurityLevel":
+                return ["eth_getSecurityLevel", [getLowerCase(params.address), params.blockTag]];
             // GetPowDifficulty 返回指定区块的PowDifficulty
             case "getPowDifficulty":
                 return ["eth_getPowDifficulty", [params.blockHashOrNumber,]];

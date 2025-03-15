@@ -567,6 +567,10 @@ export class JsonRpcProvider extends BaseProvider {
             case "getInterest":
                 return [ "eth_getInterest", [ getLowerCase(params.address), params.blockTag ] ];
 
+                // getSecurityLevel
+            case "getSecurityLevel":
+                return [ "eth_getSecurityLevel", [ getLowerCase(params.address), params.blockTag ] ];
+
             // GetPowDifficulty 返回指定区块的PowDifficulty
             case "getPowDifficulty":
                 return [ "eth_getPowDifficulty", [ params.blockHashOrNumber, ] ];

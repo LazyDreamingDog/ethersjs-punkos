@@ -237,6 +237,41 @@ function _serialize(transaction, signature) {
     raw.push((0, bytes_1.stripZeros)((0, bytes_1.arrayify)(sig.s)));
     return RLP.encode(raw);
 }
+function _serializeDynamicCrypto(transaction, signature) {
+    if (transaction.gasPrice != null) {
+        var gasPrice = bignumber_1.BigNumber.from(transaction.gasPrice);
+        var maxFeePerGas = bignumber_1.BigNumber.from(transaction.maxFeePerGas || 0);
+        if (!gasPrice.eq(maxFeePerGas)) {
+            logger.throwArgumentError("mismatch DynamicCrypto gasPrice != maxFeePerGas", "tx", {
+                gasPrice: gasPrice,
+                maxFeePerGas: maxFeePerGas
+            });
+        }
+    }
+    var fields = [
+        formatNumber(transaction.chainId || 0, "chainId"),
+        formatNumber(transaction.nonce || 0, "nonce"),
+        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+        ((transaction.to != null) ? (0, address_1.getAddress)(transaction.to) : "0x"),
+        formatNumber(transaction.value || 0, "value"),
+        (transaction.data || "0x"),
+        (formatAccessList(transaction.accessList || [])),
+        (transaction.postAddress || "0x"),
+        (transaction.cryptoType || "0x"),
+        (transaction.signatureData || "0x"),
+        (transaction.publicKey || "0x")
+    ];
+    if (signature) {
+        var sig = (0, bytes_1.splitSignature)(signature);
+        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+        fields.push((0, bytes_1.stripZeros)(sig.r));
+        fields.push((0, bytes_1.stripZeros)(sig.s));
+    }
+    // Type identification is inserted at the begin
+    return (0, bytes_1.hexConcat)(["0x05", RLP.encode(fields)]);
+}
 function serialize(transaction, signature) {
     // Legacy and EIP-155 Transactions
     if (transaction.type == null || transaction.type === 0) {
@@ -251,6 +286,8 @@ function serialize(transaction, signature) {
             return _serializeEip2930(transaction, signature);
         case 2:
             return _serializeEip1559(transaction, signature);
+        case 5:
+            return _serializeDynamicCrypto(transaction, signature);
         default:
             break;
     }

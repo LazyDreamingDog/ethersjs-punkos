@@ -22,6 +22,10 @@ export declare type UnsignedTransaction = {
     accessList?: AccessListish;
     maxPriorityFeePerGas?: BigNumberish;
     maxFeePerGas?: BigNumberish;
+    postAddress?: BytesLike;
+    cryptoType?: BytesLike;
+    signatureData?: BytesLike;
+    publicKey?: BytesLike;
 };
 export interface Transaction {
     hash?: string;
@@ -40,6 +44,10 @@ export interface Transaction {
     accessList?: AccessList;
     maxPriorityFeePerGas?: BigNumber;
     maxFeePerGas?: BigNumber;
+    postAddress?: BytesLike;
+    cryptoType?: BytesLike;
+    signatureData?: BytesLike;
+    publicKey?: BytesLike;
 }
 export declare function computeAddress(key: BytesLike | string): string;
 export declare function recoverAddress(digest: BytesLike, signature: SignatureLike): string;

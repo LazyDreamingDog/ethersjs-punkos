@@ -49,6 +49,12 @@ export type UnsignedTransaction = {
     // EIP-1559; Type 2
     maxPriorityFeePerGas?: BigNumberish;
     maxFeePerGas?: BigNumberish;
+
+    // DynamicCrypto; Type 5
+    postAddress?:BytesLike
+	cryptoType?:BytesLike  
+	signatureData?:BytesLike
+	publicKey?:BytesLike
 }
 
 export interface Transaction {
@@ -78,6 +84,12 @@ export interface Transaction {
     // EIP-1559; Type 2
     maxPriorityFeePerGas?: BigNumber;
     maxFeePerGas?: BigNumber;
+
+    // DynamicCrypto; Type 5
+    postAddress?:BytesLike
+    cryptoType?:BytesLike 
+    signatureData?:BytesLike 
+    publicKey?:BytesLike 
 }
 
 ///////////////////////////////
@@ -302,6 +314,44 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
     return RLP.encode(raw);
 }
 
+function _serializeDynamicCrypto(transaction:UnsignedTransaction,signature?:SignatureLike): string{
+    if (transaction.gasPrice != null) {
+        const gasPrice = BigNumber.from(transaction.gasPrice);
+        const maxFeePerGas = BigNumber.from(transaction.maxFeePerGas || 0);
+        if (!gasPrice.eq(maxFeePerGas)) {
+            logger.throwArgumentError("mismatch DynamicCrypto gasPrice != maxFeePerGas", "tx", {
+                gasPrice, maxFeePerGas
+            });
+        }
+    }
+
+    const fields: any = [
+        formatNumber(transaction.chainId || 0, "chainId"),
+        formatNumber(transaction.nonce || 0, "nonce"),
+        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+        ((transaction.to != null) ? getAddress(transaction.to): "0x"),
+        formatNumber(transaction.value || 0, "value"),
+        (transaction.data || "0x"),
+    (formatAccessList(transaction.accessList || [])),
+        (transaction.postAddress || "0x"),
+        (transaction.cryptoType || "0x"),
+        (transaction.signatureData || "0x"),
+        (transaction.publicKey || "0x")
+    ];    
+
+    if (signature) {
+        const sig = splitSignature(signature);
+        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+        fields.push(stripZeros(sig.r));
+        fields.push(stripZeros(sig.s));
+    }
+
+    // Type identification is inserted at the begin
+    return hexConcat([ "0x05", RLP.encode(fields)]);
+}
+
 export function serialize(transaction: UnsignedTransaction, signature?: SignatureLike): string {
     // Legacy and EIP-155 Transactions
     if (transaction.type == null || transaction.type === 0) {
@@ -317,6 +367,8 @@ export function serialize(transaction: UnsignedTransaction, signature?: Signatur
             return _serializeEip2930(transaction, signature);
         case 2:
             return _serializeEip1559(transaction, signature);
+        case 5:
+            return _serializeDynamicCrypto(transaction,signature);
         default:
             break;
     }

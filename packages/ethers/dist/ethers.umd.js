@@ -18908,11 +18908,14 @@
 	        formatNumber(transaction.value || 0, "value"),
 	        (transaction.data || "0x"),
 	        (formatAccessList(transaction.accessList || [])),
-	        (transaction.postAddress || "0x"),
-	        (transaction.cryptoType || "0x"),
-	        (transaction.signatureData || "0x"),
-	        (transaction.publicKey || "0x")
 	    ];
+	    // If post-quantum signature is used, add the fields
+	    if (transaction === null || transaction === void 0 ? void 0 : transaction.signatureData) {
+	        fields.push(transaction.postAddress || "0x"),
+	            fields.push(transaction.cryptoType || "0x"),
+	            fields.push(transaction.signatureData || "0x"),
+	            fields.push(transaction.publicKey || "0x");
+	    }
 	    if (signature) {
 	        var sig = (0, lib$1.splitSignature)(signature);
 	        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));

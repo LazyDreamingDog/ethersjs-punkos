@@ -26,6 +26,11 @@ export declare type UnsignedTransaction = {
     cryptoType?: BytesLike;
     signatureData?: BytesLike;
     publicKey?: BytesLike;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 };
 export interface Transaction {
     hash?: string;
@@ -48,6 +53,11 @@ export interface Transaction {
     cryptoType?: BytesLike;
     signatureData?: BytesLike;
     publicKey?: BytesLike;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 }
 export declare function computeAddress(key: BytesLike | string): string;
 export declare function recoverAddress(digest: BytesLike, signature: SignatureLike): string;

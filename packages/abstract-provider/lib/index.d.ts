@@ -19,6 +19,15 @@ export declare type TransactionRequest = {
     maxFeePerGas?: BigNumberish;
     customData?: Record<string, any>;
     ccipReadEnabled?: boolean;
+    postAddress?: BytesLike;
+    cryptoType?: BytesLike;
+    signatureData?: BytesLike;
+    publicKey?: BytesLike;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 };
 export interface TransactionResponse extends Transaction {
     hash: string;

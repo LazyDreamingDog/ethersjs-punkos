@@ -35,6 +35,18 @@ export type TransactionRequest = {
 
     customData?: Record<string, any>;
     ccipReadEnabled?: boolean;
+
+    // DynamicCrypto; Type 5
+    postAddress?:BytesLike
+    cryptoType?:BytesLike  
+    signatureData?:BytesLike
+    publicKey?:BytesLike
+    // Deposit; Type 6
+    deployerAddress?:BytesLike;
+	investorAddress ?:BytesLike;
+	beneficiaryAddress?:BytesLike;
+	stakedAmount?:BigNumberish;
+	stakedTime?:number;
 }
 
 export interface TransactionResponse extends Transaction {

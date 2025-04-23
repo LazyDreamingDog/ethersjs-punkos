@@ -20,8 +20,8 @@ export type AccessList = Array<{ address: string, storageKeys: Array<string> }>;
 
 // Input allows flexibility in describing an access list
 export type AccessListish = AccessList |
-                            Array<[ string, Array<string> ]> |
-                            Record<string, Array<string>>;
+    Array<[string, Array<string>]> |
+    Record<string, Array<string>>;
 
 export enum TransactionTypes {
     legacy = 0,
@@ -51,17 +51,17 @@ export type UnsignedTransaction = {
     maxFeePerGas?: BigNumberish;
 
     // DynamicCrypto; Type 5
-    postAddress?:BytesLike;
-	cryptoType?:BytesLike;
-	signatureData?:BytesLike;
-	publicKey?:BytesLike;
+    postAddress?: BytesLike;
+    cryptoType?: BytesLike;
+    signatureData?: BytesLike;
+    publicKey?: BytesLike;
 
     // Deposit; Type 6
-    deployerAddress?:BytesLike;
-	investorAddress ?:BytesLike;
-	beneficiaryAddress?:BytesLike;
-	stakedAmount?:BigNumberish;
-	stakedTime?:number;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 }
 
 export interface Transaction {
@@ -93,17 +93,17 @@ export interface Transaction {
     maxFeePerGas?: BigNumber;
 
     // DynamicCrypto; Type 5
-    postAddress?:BytesLike
-    cryptoType?:BytesLike 
-    signatureData?:BytesLike 
-    publicKey?:BytesLike 
+    postAddress?: BytesLike
+    cryptoType?: BytesLike
+    signatureData?: BytesLike
+    publicKey?: BytesLike
 
     // Deposit; Type 6
-    deployerAddress?:BytesLike;
-	investorAddress ?:BytesLike;
-	beneficiaryAddress?:BytesLike;
-	stakedAmount?:BigNumberish;
-	stakedTime?:number;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 }
 
 ///////////////////////////////
@@ -120,16 +120,16 @@ function handleNumber(value: string): BigNumber {
 
 // Legacy Transaction Fields
 const transactionFields = [
-    { name: "nonce",    maxLength: 32, numeric: true },
+    { name: "nonce", maxLength: 32, numeric: true },
     { name: "gasPrice", maxLength: 32, numeric: true },
     { name: "gasLimit", maxLength: 32, numeric: true },
-    { name: "to",          length: 20 },
-    { name: "value",    maxLength: 32, numeric: true },
+    { name: "to", length: 20 },
+    { name: "value", maxLength: 32, numeric: true },
     { name: "data" },
 ];
 
-const allowedTransactionKeys: { [ key: string ]: boolean } = {
-    chainId: true, data: true, gasLimit: true, gasPrice:true, nonce: true, to: true, type: true, value: true
+const allowedTransactionKeys: { [key: string]: boolean } = {
+    chainId: true, data: true, gasLimit: true, gasPrice: true, nonce: true, to: true, type: true, value: true
 }
 
 export function computeAddress(key: BytesLike | string): string {
@@ -149,12 +149,12 @@ function formatNumber(value: BigNumberish, name: string): Uint8Array {
     return result;
 }
 
-function accessSetify(addr: string, storageKeys: Array<string>): { address: string,storageKeys: Array<string> } {
+function accessSetify(addr: string, storageKeys: Array<string>): { address: string, storageKeys: Array<string> } {
     return {
         address: getAddress(addr),
         storageKeys: (storageKeys || []).map((storageKey, index) => {
             if (hexDataLength(storageKey) !== 32) {
-                logger.throwArgumentError("invalid access list storageKey", `accessList[${ addr }:${ index }]`, storageKey)
+                logger.throwArgumentError("invalid access list storageKey", `accessList[${addr}:${index}]`, storageKey)
             }
             return storageKey.toLowerCase();
         })
@@ -163,10 +163,10 @@ function accessSetify(addr: string, storageKeys: Array<string>): { address: stri
 
 export function accessListify(value: AccessListish): AccessList {
     if (Array.isArray(value)) {
-        return (<Array<[ string, Array<string>] | { address: string, storageKeys: Array<string>}>>value).map((set, index) => {
+        return (<Array<[string, Array<string>] | { address: string, storageKeys: Array<string> }>>value).map((set, index) => {
             if (Array.isArray(set)) {
                 if (set.length > 2) {
-                    logger.throwArgumentError("access list expected to be [ address, storageKeys[] ]", `value[${ index }]`, set);
+                    logger.throwArgumentError("access list expected to be [ address, storageKeys[] ]", `value[${index}]`, set);
                 }
                 return accessSetify(set[0], set[1])
             }
@@ -178,15 +178,15 @@ export function accessListify(value: AccessListish): AccessList {
         const storageKeys: Record<string, true> = value[addr].reduce((accum, storageKey) => {
             accum[storageKey] = true;
             return accum;
-        }, <Record<string, true>>{ });
+        }, <Record<string, true>>{});
         return accessSetify(addr, Object.keys(storageKeys).sort())
     });
     result.sort((a, b) => (a.address.localeCompare(b.address)));
     return result;
 }
 
-function formatAccessList(value: AccessListish): Array<[ string, Array<string> ]> {
-    return accessListify(value).map((set) => [ set.address, set.storageKeys ]);
+function formatAccessList(value: AccessListish): Array<[string, Array<string>]> {
+    return accessListify(value).map((set) => [set.address, set.storageKeys]);
 }
 
 function _serializeEip1559(transaction: UnsignedTransaction, signature?: SignatureLike): string {
@@ -209,7 +209,7 @@ function _serializeEip1559(transaction: UnsignedTransaction, signature?: Signatu
         formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
         formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
         formatNumber(transaction.gasLimit || 0, "gasLimit"),
-        ((transaction.to != null) ? getAddress(transaction.to): "0x"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
         formatNumber(transaction.value || 0, "value"),
         (transaction.data || "0x"),
         (formatAccessList(transaction.accessList || []))
@@ -222,7 +222,7 @@ function _serializeEip1559(transaction: UnsignedTransaction, signature?: Signatu
         fields.push(stripZeros(sig.s));
     }
 
-    return hexConcat([ "0x02", RLP.encode(fields)]);
+    return hexConcat(["0x02", RLP.encode(fields)]);
 }
 
 function _serializeEip2930(transaction: UnsignedTransaction, signature?: SignatureLike): string {
@@ -231,7 +231,7 @@ function _serializeEip2930(transaction: UnsignedTransaction, signature?: Signatu
         formatNumber(transaction.nonce || 0, "nonce"),
         formatNumber(transaction.gasPrice || 0, "gasPrice"),
         formatNumber(transaction.gasLimit || 0, "gasLimit"),
-        ((transaction.to != null) ? getAddress(transaction.to): "0x"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
         formatNumber(transaction.value || 0, "value"),
         (transaction.data || "0x"),
         (formatAccessList(transaction.accessList || []))
@@ -244,7 +244,7 @@ function _serializeEip2930(transaction: UnsignedTransaction, signature?: Signatu
         fields.push(stripZeros(sig.s));
     }
 
-    return hexConcat([ "0x01", RLP.encode(fields)]);
+    return hexConcat(["0x01", RLP.encode(fields)]);
 }
 
 // Legacy Transactions and EIP-155
@@ -253,9 +253,9 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
 
     const raw: Array<string | Uint8Array> = [];
 
-    transactionFields.forEach(function(fieldInfo) {
+    transactionFields.forEach(function (fieldInfo) {
         let value = (<any>transaction)[fieldInfo.name] || ([]);
-        const options: DataOptions = { };
+        const options: DataOptions = {};
         if (fieldInfo.numeric) { options.hexPad = "left"; }
         value = arrayify(hexlify(value, options));
 
@@ -268,7 +268,7 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
         if (fieldInfo.maxLength) {
             value = stripZeros(value);
             if (value.length > fieldInfo.maxLength) {
-                logger.throwArgumentError("invalid length for " + fieldInfo.name, ("transaction:" + fieldInfo.name), value );
+                logger.throwArgumentError("invalid length for " + fieldInfo.name, ("transaction:" + fieldInfo.name), value);
             }
         }
 
@@ -280,7 +280,7 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
         // A chainId was provided; if non-zero we'll use EIP-155
         chainId = transaction.chainId;
 
-        if (typeof(chainId) !== "number") {
+        if (typeof (chainId) !== "number") {
             logger.throwArgumentError("invalid transaction.chainId", "transaction", transaction);
         }
 
@@ -315,10 +315,10 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
 
         // If an EIP-155 v (directly or indirectly; maybe _vs) was provided, check it!
         if (sig.v > 28 && sig.v !== v) {
-             logger.throwArgumentError("transaction.chainId/signature.v mismatch", "signature", signature);
+            logger.throwArgumentError("transaction.chainId/signature.v mismatch", "signature", signature);
         }
     } else if (sig.v !== v) {
-         logger.throwArgumentError("transaction.chainId/signature.v mismatch", "signature", signature);
+        logger.throwArgumentError("transaction.chainId/signature.v mismatch", "signature", signature);
     }
 
     raw.push(hexlify(v));
@@ -328,7 +328,7 @@ function _serialize(transaction: UnsignedTransaction, signature?: SignatureLike)
     return RLP.encode(raw);
 }
 
-function _serializeDynamicCrypto(transaction:UnsignedTransaction,signature?:SignatureLike): string{
+function _serializeDynamicCrypto(transaction: UnsignedTransaction, signature?: SignatureLike): string {
     if (transaction.gasPrice != null) {
         const gasPrice = BigNumber.from(transaction.gasPrice);
         const maxFeePerGas = BigNumber.from(transaction.maxFeePerGas || 0);
@@ -345,20 +345,20 @@ function _serializeDynamicCrypto(transaction:UnsignedTransaction,signature?:Sign
         formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
         formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
         formatNumber(transaction.gasLimit || 0, "gasLimit"),
-        ((transaction.to != null) ? getAddress(transaction.to): "0x"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
         formatNumber(transaction.value || 0, "value"),
         (transaction.data || "0x"),
         (formatAccessList(transaction.accessList || [])),
-    ];    
+    ];
 
     // If post-quantum signature is used, add the fields
-    if (transaction?.signatureData){
+    if (transaction?.signatureData) {
         fields.push(transaction.postAddress || "0x"),
-        fields.push(transaction.cryptoType || "0x"),
-        fields.push(transaction.signatureData || "0x"),
-        fields.push(transaction.publicKey || "0x")
+            fields.push(transaction.cryptoType || "0x"),
+            fields.push(transaction.signatureData || "0x"),
+            fields.push(transaction.publicKey || "0x")
     }
-    
+
     if (signature) {
         const sig = splitSignature(signature);
         fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
@@ -367,26 +367,26 @@ function _serializeDynamicCrypto(transaction:UnsignedTransaction,signature?:Sign
     }
 
     // Type identification is inserted at the begin
-    return hexConcat([ "0x05", RLP.encode(fields)]);
+    return hexConcat(["0x05", RLP.encode(fields)]);
 }
 
-function _serializeDeposit(transaction:UnsignedTransaction,signature?:SignatureLike): string{
+function _serializeDeposit(transaction: UnsignedTransaction, signature?: SignatureLike): string {
     const fields: any = [
         formatNumber(transaction.chainId || 0, "chainId"),
         formatNumber(transaction.nonce || 0, "nonce"),
         formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
         formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
         formatNumber(transaction.gasLimit || 0, "gasLimit"),
-        ((transaction.to != null) ? getAddress(transaction.to): "0x"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
         formatNumber(transaction.value || 0, "value"),
         (transaction.data || "0x"),
         (transaction.deployerAddress || "0x"),
         (transaction.investorAddress || "0x"),
         (transaction.beneficiaryAddress || "0x"),
-        formatNumber(transaction.stakedAmount || 0,"stakedAmount"),
-        formatNumber(transaction.stakedTime || 0,"stakedTime"),
-    ];    
-    
+        formatNumber(transaction.stakedAmount || 0, "stakedAmount"),
+        formatNumber(transaction.stakedTime || 0, "stakedTime"),
+    ];
+
     if (signature) {
         const sig = splitSignature(signature);
         fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
@@ -395,7 +395,7 @@ function _serializeDeposit(transaction:UnsignedTransaction,signature?:SignatureL
     }
 
     // Type identification is inserted at the begin
-    return hexConcat([ "0x06", RLP.encode(fields)]);
+    return hexConcat(["0x06", RLP.encode(fields)]);
 }
 
 
@@ -415,14 +415,14 @@ export function serialize(transaction: UnsignedTransaction, signature?: Signatur
         case 2:
             return _serializeEip1559(transaction, signature);
         case 5:
-            return _serializeDynamicCrypto(transaction,signature);
+            return _serializeDynamicCrypto(transaction, signature);
         case 6:
-            return _serializeDeposit(transaction,signature);
+            return _serializeDeposit(transaction, signature);
         default:
             break;
     }
 
-    return logger.throwError(`unsupported transaction type: ${ transaction.type }`, Logger.errors.UNSUPPORTED_OPERATION, {
+    return logger.throwError(`unsupported transaction type: ${transaction.type}`, Logger.errors.UNSUPPORTED_OPERATION, {
         operation: "serializeTransaction",
         transactionType: transaction.type
     });
@@ -456,17 +456,17 @@ function _parseEip1559(payload: Uint8Array): Transaction {
     const maxPriorityFeePerGas = handleNumber(transaction[2]);
     const maxFeePerGas = handleNumber(transaction[3]);
     const tx: Transaction = {
-        type:                  2,
-        chainId:               handleNumber(transaction[0]).toNumber(),
-        nonce:                 handleNumber(transaction[1]).toNumber(),
-        maxPriorityFeePerGas:  maxPriorityFeePerGas,
-        maxFeePerGas:          maxFeePerGas,
-        gasPrice:              null,
-        gasLimit:              handleNumber(transaction[4]),
-        to:                    handleAddress(transaction[5]),
-        value:                 handleNumber(transaction[6]),
-        data:                  transaction[7],
-        accessList:            accessListify(transaction[8]),
+        type: 2,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        gasPrice: null,
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        accessList: accessListify(transaction[8]),
     };
 
     // Unsigned EIP-1559 Transaction
@@ -487,14 +487,14 @@ function _parseEip2930(payload: Uint8Array): Transaction {
     }
 
     const tx: Transaction = {
-        type:       1,
-        chainId:    handleNumber(transaction[0]).toNumber(),
-        nonce:      handleNumber(transaction[1]).toNumber(),
-        gasPrice:   handleNumber(transaction[2]),
-        gasLimit:   handleNumber(transaction[3]),
-        to:         handleAddress(transaction[4]),
-        value:      handleNumber(transaction[5]),
-        data:       transaction[6],
+        type: 1,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        gasPrice: handleNumber(transaction[2]),
+        gasLimit: handleNumber(transaction[3]),
+        to: handleAddress(transaction[4]),
+        value: handleNumber(transaction[5]),
+        data: transaction[6],
         accessList: accessListify(transaction[7])
     };
 
@@ -517,13 +517,13 @@ function _parse(rawTransaction: Uint8Array): Transaction {
     }
 
     const tx: Transaction = {
-        nonce:    handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[0]).toNumber(),
         gasPrice: handleNumber(transaction[1]),
         gasLimit: handleNumber(transaction[2]),
-        to:       handleAddress(transaction[3]),
-        value:    handleNumber(transaction[4]),
-        data:     transaction[5],
-        chainId:  0
+        to: handleAddress(transaction[3]),
+        value: handleNumber(transaction[4]),
+        data: transaction[5],
+        chainId: 0
     };
 
     // Legacy unsigned transaction
@@ -581,17 +581,17 @@ function _parseDynamicCrypto(payload: Uint8Array): Transaction {
         logger.throwArgumentError("invalid component count for transaction type: 5", "payload", hexlify(payload));
     }
     const tx: Transaction = {
-        type:                  5,
-        chainId:               handleNumber(transaction[0]).toNumber(),
-        nonce:                 handleNumber(transaction[1]).toNumber(),
-        maxPriorityFeePerGas:  handleNumber(transaction[2]),
-        maxFeePerGas:          handleNumber(transaction[3]),
-        gasPrice:              null,
-        gasLimit:              handleNumber(transaction[4]),
-        to:                    handleAddress(transaction[5]),
-        value:                 handleNumber(transaction[6]),
-        data:                  transaction[7],
-        accessList:            accessListify(transaction[8]),
+        type: 5,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: handleNumber(transaction[2]),
+        maxFeePerGas: handleNumber(transaction[3]),
+        gasPrice: null,
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        accessList: accessListify(transaction[8]),
         postAddress: transaction[9],
         cryptoType: transaction[10],
         signatureData: transaction[11],
@@ -602,32 +602,31 @@ function _parseDynamicCrypto(payload: Uint8Array): Transaction {
 
     tx.hash = keccak256(payload);
 
-    _parseEipSignature(tx, transaction.slice(12), _serializeDynamicCrypto);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDynamicCrypto);
 
     return tx;
 }
 
 function _parseDeposit(payload: Uint8Array): Transaction {
     const transaction = RLP.decode(payload.slice(1));
-
     if (transaction.length !== 13 && transaction.length !== 16) {
         logger.throwArgumentError("invalid component count for transaction type: 6", "payload", hexlify(payload));
     }
 
     const tx: Transaction = {
-        type:       6,
-        chainId:    handleNumber(transaction[0]).toNumber(),
-        nonce:      handleNumber(transaction[1]).toNumber(),
-        maxPriorityFeePerGas:   handleNumber(transaction[2]),
-        maxFeePerGas:          handleNumber(transaction[3]),
-        gasLimit:   handleNumber(transaction[4]),
-        to:         handleAddress(transaction[5]),
-        value:      handleNumber(transaction[6]),
-        data:       transaction[7],
+        type: 6,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: handleNumber(transaction[2]),
+        maxFeePerGas: handleNumber(transaction[3]),
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
         deployerAddress: handleAddress(transaction[8]),
         investorAddress: handleAddress(transaction[9]),
         beneficiaryAddress: handleAddress(transaction[10]),
-        stakedAmount: handleAddress(transaction[11]),
+        stakedAmount: handleNumber(transaction[11]),
         stakedTime: handleNumber(transaction[12]).toNumber()
     };
 
@@ -636,10 +635,10 @@ function _parseDeposit(payload: Uint8Array): Transaction {
 
     // Signed Deposit Transaction
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(8), _serializeDeposit);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDeposit);
 
     return tx;
-}   
+}
 
 export function parse(rawTransaction: BytesLike): Transaction {
     const payload = arrayify(rawTransaction);
@@ -661,7 +660,7 @@ export function parse(rawTransaction: BytesLike): Transaction {
             break;
     }
 
-    return logger.throwError(`unsupported transaction type: ${ payload[0] }`, Logger.errors.UNSUPPORTED_OPERATION, {
+    return logger.throwError(`unsupported transaction type: ${payload[0]}`, Logger.errors.UNSUPPORTED_OPERATION, {
         operation: "parseTransaction",
         transactionType: payload[0]
     });

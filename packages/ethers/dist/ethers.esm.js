@@ -9751,7 +9751,7 @@ var __awaiter$3 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
 };
 const logger$f = new Logger(version$a);
 const allowedTransactionKeys = [
-    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value"
+    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime"
 ];
 const forwardErrors = [
     Logger.errors.INSUFFICIENT_FUNDS,
@@ -9873,6 +9873,7 @@ class Signer {
     //  - We allow gasPrice for EIP-1559 as long as it matches maxFeePerGas
     populateTransaction(transaction) {
         return __awaiter$3(this, void 0, void 0, function* () {
+            console.log("tx request at populateTransaction's begin", transaction);
             const tx = yield resolveProperties(this.checkTransaction(transaction));
             if (tx.to != null) {
                 tx.to = Promise.resolve(tx.to).then((to) => __awaiter$3(this, void 0, void 0, function* () {
@@ -9888,84 +9889,62 @@ class Signer {
                 // Prevent this error from causing an UnhandledPromiseException
                 tx.to.catch((error) => { });
             }
-            // Do not allow mixing pre-eip-1559 and eip-1559 properties
+            // Do not allow mixing pre-eip-1559(gasPrice) and eip-1559 properties(maxFeePerGas,maxPriorityFeePerGas)
             const hasEip1559 = (tx.maxFeePerGas != null || tx.maxPriorityFeePerGas != null);
-            if (tx.gasPrice != null && (tx.type === 2 || hasEip1559)) {
-                logger$f.throwArgumentError("eip-1559 transaction do not support gasPrice", "transaction", transaction);
+            if ((tx.type === 0 || tx.type === 1) && hasEip1559) {
+                logger$f.throwArgumentError("transaction(type 0,1) do not support maxFeePerGas and maxPriorityPerGas, only support gasPrice", "transaction", transaction);
             }
-            else if ((tx.type === 0 || tx.type === 1) && hasEip1559) {
-                logger$f.throwArgumentError("pre-eip-1559 transaction do not support maxFeePerGas/maxPriorityFeePerGas", "transaction", transaction);
+            else if (tx.gasPrice != null && hasEip1559) {
+                logger$f.throwArgumentError("transaction(type 2,5,6) do not support gasPrice, only support maxFeePerGas and maxPriorityPerGas", "transaction", transaction);
             }
-            if ((tx.type === 2 || tx.type == null) && (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null)) {
-                // Fully-formed EIP-1559 transaction (skip getFeeData)
-                tx.type = 2;
-            }
-            else if (tx.type === 0 || tx.type === 1) {
-                // Explicit Legacy or EIP-2930 transaction
-                // Populate missing gasPrice
-                if (tx.gasPrice == null) {
-                    tx.gasPrice = this.getGasPrice();
-                }
-            }
-            else {
-                // We need to get fee data to determine things
-                const feeData = yield this.getFeeData();
-                if (tx.type == null) {
-                    // We need to auto-detect the intended type of this transaction...
-                    if (feeData.maxFeePerGas != null && feeData.maxPriorityFeePerGas != null) {
-                        // The network supports EIP-1559!
-                        // Upgrade transaction from null to eip-1559
-                        tx.type = 2;
-                        if (tx.gasPrice != null) {
-                            // Using legacy gasPrice property on an eip-1559 network,
-                            // so use gasPrice as both fee properties
-                            const gasPrice = tx.gasPrice;
-                            delete tx.gasPrice;
-                            tx.maxFeePerGas = gasPrice;
-                            tx.maxPriorityFeePerGas = gasPrice;
-                        }
-                        else {
-                            // Populate missing fee data
-                            if (tx.maxFeePerGas == null) {
-                                tx.maxFeePerGas = feeData.maxFeePerGas;
-                            }
-                            if (tx.maxPriorityFeePerGas == null) {
-                                tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
-                            }
-                        }
-                    }
-                    else if (feeData.gasPrice != null) {
-                        // Network doesn't support EIP-1559...
-                        // ...but they are trying to use EIP-1559 properties
-                        if (hasEip1559) {
-                            logger$f.throwError("network does not support EIP-1559", Logger.errors.UNSUPPORTED_OPERATION, {
-                                operation: "populateTransaction"
-                            });
-                        }
-                        // Populate missing fee data
-                        if (tx.gasPrice == null) {
-                            tx.gasPrice = feeData.gasPrice;
-                        }
-                        // Explicitly set untyped transaction to legacy
-                        tx.type = 0;
+            // Tx type is unassigned, determining type by field
+            if (tx.type == null) {
+                if (tx.gasPrice != null) {
+                    if (tx.accessList !== null) {
+                        tx.type = 1;
                     }
                     else {
-                        // getFeeData has failed us.
-                        logger$f.throwError("failed to get consistent fee data", Logger.errors.UNSUPPORTED_OPERATION, {
-                            operation: "signer.getFeeData"
-                        });
+                        tx.type = 0;
                     }
                 }
-                else if (tx.type === 2) {
-                    // Explicitly using EIP-1559
-                    // Populate missing fee data
-                    if (tx.maxFeePerGas == null) {
-                        tx.maxFeePerGas = feeData.maxFeePerGas;
+                else if (tx.maxFeePerGas != null && tx.maxPriorityFeePerGas != null) {
+                    if (tx.publicKey != null && tx.signatureData != null && tx.cryptoType != null && tx.postAddress != null) {
+                        tx.type = 5;
                     }
-                    if (tx.maxPriorityFeePerGas == null) {
-                        tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+                    else if (tx.deployerAddress != null && tx.investorAddress != null && tx.beneficiaryAddress != null && tx.stakedAmount !== 0 && tx.stakedTime !== 0) {
+                        tx.type = 6;
+                    }
+                    else {
+                        tx.type = 2;
                     }
                 }
+            }
+            // Fill unassigned fields by querying the blockchain
+            switch (tx.type) {
+                case 0:
+                case 1:
+                    // Tx type 0,1 only support gasPrice
+                    if (tx.gasPrice == null) {
+                        tx.gasPrice = this.getGasPrice();
+                    }
+                    break;
+                case 2:
+                case 5:
+                case 6:
+                    // Tx type 2,5,6 only support maxFeePerGas and maxPriorityPerGas
+                    if (tx.maxFeePerGas == null && tx.maxPriorityFeePerGas == null) {
+                        const feeData = yield this.getFeeData();
+                        if (feeData.maxFeePerGas == null || feeData.maxPriorityFeePerGas == null) {
+                            logger$f.throwError("failed to get consistent fee data", Logger.errors.UNSUPPORTED_OPERATION, {
+                                operation: "signer.getFeeData"
+                            });
+                        }
+                        else {
+                            tx.maxFeePerGas = feeData.maxFeePerGas;
+                            tx.maxPriorityFeePerGas = feeData.maxPriorityFeePerGas;
+                        }
+                    }
+                    break;
             }
             if (tx.nonce == null) {
                 tx.nonce = this.getTransactionCount("pending");
@@ -9995,6 +9974,7 @@ class Signer {
                     return results[0];
                 });
             }
+            console.log("tx request at populateTransaction's end", tx);
             return yield resolveProperties(tx);
         });
     }
@@ -14371,36 +14351,37 @@ function _parseDynamicCrypto(payload) {
         return tx;
     }
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(12), _serializeDynamicCrypto);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDynamicCrypto);
     return tx;
 }
 function _parseDeposit(payload) {
     const transaction = decode(payload.slice(1));
-    if (transaction.length !== 12 && transaction.length !== 15) {
+    if (transaction.length !== 13 && transaction.length !== 16) {
         logger$h.throwArgumentError("invalid component count for transaction type: 6", "payload", hexlify(payload));
     }
     const tx = {
-        type: 1,
+        type: 6,
         chainId: handleNumber(transaction[0]).toNumber(),
         nonce: handleNumber(transaction[1]).toNumber(),
-        gasPrice: handleNumber(transaction[2]),
-        gasLimit: handleNumber(transaction[3]),
-        to: handleAddress(transaction[4]),
-        value: handleNumber(transaction[5]),
-        data: transaction[6],
-        deployerAddress: handleAddress(transaction[7]),
-        investorAddress: handleAddress(transaction[8]),
-        beneficiaryAddress: handleAddress(transaction[9]),
-        stakedAmount: handleAddress(transaction[10]),
-        stakedTime: handleNumber(transaction[11]).toNumber()
+        maxPriorityFeePerGas: handleNumber(transaction[2]),
+        maxFeePerGas: handleNumber(transaction[3]),
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        deployerAddress: handleAddress(transaction[8]),
+        investorAddress: handleAddress(transaction[9]),
+        beneficiaryAddress: handleAddress(transaction[10]),
+        stakedAmount: handleNumber(transaction[11]),
+        stakedTime: handleNumber(transaction[12]).toNumber()
     };
     // Unsigned Deposit Transaction
-    if (transaction.length === 12) {
+    if (transaction.length === 13) {
         return tx;
     }
     // Signed Deposit Transaction
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(8), _serializeDeposit);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDeposit);
     return tx;
 }
 function parse(rawTransaction) {

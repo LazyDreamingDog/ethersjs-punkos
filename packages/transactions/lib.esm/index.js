@@ -455,36 +455,37 @@ function _parseDynamicCrypto(payload) {
         return tx;
     }
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(12), _serializeDynamicCrypto);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDynamicCrypto);
     return tx;
 }
 function _parseDeposit(payload) {
     const transaction = RLP.decode(payload.slice(1));
-    if (transaction.length !== 12 && transaction.length !== 15) {
+    if (transaction.length !== 13 && transaction.length !== 16) {
         logger.throwArgumentError("invalid component count for transaction type: 6", "payload", hexlify(payload));
     }
     const tx = {
-        type: 1,
+        type: 6,
         chainId: handleNumber(transaction[0]).toNumber(),
         nonce: handleNumber(transaction[1]).toNumber(),
-        gasPrice: handleNumber(transaction[2]),
-        gasLimit: handleNumber(transaction[3]),
-        to: handleAddress(transaction[4]),
-        value: handleNumber(transaction[5]),
-        data: transaction[6],
-        deployerAddress: handleAddress(transaction[7]),
-        investorAddress: handleAddress(transaction[8]),
-        beneficiaryAddress: handleAddress(transaction[9]),
-        stakedAmount: handleAddress(transaction[10]),
-        stakedTime: handleNumber(transaction[11]).toNumber()
+        maxPriorityFeePerGas: handleNumber(transaction[2]),
+        maxFeePerGas: handleNumber(transaction[3]),
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        deployerAddress: handleAddress(transaction[8]),
+        investorAddress: handleAddress(transaction[9]),
+        beneficiaryAddress: handleAddress(transaction[10]),
+        stakedAmount: handleNumber(transaction[11]),
+        stakedTime: handleNumber(transaction[12]).toNumber()
     };
     // Unsigned Deposit Transaction
-    if (transaction.length === 12) {
+    if (transaction.length === 13) {
         return tx;
     }
     // Signed Deposit Transaction
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(8), _serializeDeposit);
+    _parseEipSignature(tx, transaction.slice(13), _serializeDeposit);
     return tx;
 }
 export function parse(rawTransaction) {

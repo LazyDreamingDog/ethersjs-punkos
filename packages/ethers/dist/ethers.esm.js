@@ -20649,6 +20649,25 @@ class BaseProvider extends Provider {
             }
         });
     }
+    getPostQuanCounter(addressOrName, blockTag) {
+        return __awaiter$9(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPostQuanCounter", params);
+            try {
+                return BigNumber.from(result).toNumber();
+            }
+            catch (error) {
+                return logger$t.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPostQuanCounter",
+                    params, result, error
+                });
+            }
+        });
+    }
     // getPowGas    
     getPowGas(blockHashOrNumber, blockTag) {
         return __awaiter$9(this, void 0, void 0, function* () {
@@ -22143,6 +22162,9 @@ class JsonRpcProvider extends BaseProvider {
             // GetIncentive 返回指定区块的Incentive
             case "getIncentive":
                 return ["eth_getIncentive", [params.blockHashOrNumber,]];
+            // getPostQuanCounter return postquan tx counter of given address
+            case "getPostQuanCounter":
+                return ["eth_getPostQuanCounter", [getLowerCase(params.address), params.blockTag]];
             case "getTransactionCount":
                 return ["eth_getTransactionCount", [getLowerCase(params.address), params.blockTag]];
             case "getCode":
@@ -23526,6 +23548,7 @@ function getProcessFunc(provider, method, params) {
         case "getPoSVoting":
         case "getCommitTxLength":
         case "getIncentive":
+        case "getPostQuanCounter":
         // =============================================
         case "getTransactionCount":
         case "getCode":

@@ -1308,6 +1308,25 @@ export class BaseProvider extends Provider {
             }
         });
     }
+    getPostQuanCounter(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPostQuanCounter", params);
+            try {
+                return BigNumber.from(result).toNumber();
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPostQuanCounter",
+                    params, result, error
+                });
+            }
+        });
+    }
     // getPowGas    
     getPowGas(blockHashOrNumber, blockTag) {
         return __awaiter(this, void 0, void 0, function* () {

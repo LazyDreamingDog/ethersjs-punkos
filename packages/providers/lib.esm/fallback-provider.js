@@ -231,6 +231,7 @@ function getProcessFunc(provider, method, params) {
         case "getPoSVoting":
         case "getCommitTxLength":
         case "getIncentive":
+        case "getPostQuanCounter":
         // =============================================
         case "getTransactionCount":
         case "getCode":

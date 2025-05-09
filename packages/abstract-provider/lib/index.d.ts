@@ -148,6 +148,7 @@ export declare abstract class Provider implements OnceBlockable {
     abstract getPoSVoting(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<Uint8Array>;
     abstract getCommitTxLength(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
     abstract getIncentive(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    abstract getPostQuanCounter(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
     abstract getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
     abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract getStorageAt(addressOrName: string | Promise<string>, position: BigNumberish | Promise<BigNumberish>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;

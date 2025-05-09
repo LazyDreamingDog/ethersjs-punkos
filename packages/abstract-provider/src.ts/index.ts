@@ -298,6 +298,8 @@ export abstract class Provider implements OnceBlockable {
     abstract getCommitTxLength(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
 	// GetIncentive 返回指定区块的Incentive
     abstract getIncentive(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    // GetPostQuanCounter return postquan tx counter of given address
+    abstract getPostQuanCounter(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
 
     abstract getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
     abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> ;

@@ -282,6 +282,7 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [k
         case "getPoSVoting":
         case "getCommitTxLength":
         case "getIncentive":
+        case "getPostQuanCounter":
 // =============================================
 
         case "getTransactionCount":

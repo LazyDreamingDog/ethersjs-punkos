@@ -546,6 +546,9 @@ export class JsonRpcProvider extends BaseProvider {
             // GetIncentive 返回指定区块的Incentive
             case "getIncentive":
                 return ["eth_getIncentive", [params.blockHashOrNumber,]];
+            // getPostQuanCounter return postquan tx counter of given address
+            case "getPostQuanCounter":
+                return ["eth_getPostQuanCounter", [getLowerCase(params.address), params.blockTag]];
             case "getTransactionCount":
                 return ["eth_getTransactionCount", [getLowerCase(params.address), params.blockTag]];
             case "getCode":

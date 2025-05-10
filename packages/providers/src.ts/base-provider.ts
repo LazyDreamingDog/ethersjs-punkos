@@ -1497,6 +1497,23 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
     
+    async getPostQuanCounter(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+        const result = await this.perform("getPostQuanCounter", params);
+        try {
+            return BigNumber.from(result).toNumber();
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPostQuanCounter",
+                params, result, error
+            });
+        }
+    }
+
     // getPowGas    
     async getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
         await this.getNetwork();

@@ -26625,6 +26625,39 @@
 	            });
 	        });
 	    };
+	    BaseProvider.prototype.getPostQuanCounter = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getPostQuanCounter", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result).toNumber()];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getPostQuanCounter",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
 	    // getPowGas    
 	    BaseProvider.prototype.getPowGas = function (blockHashOrNumber, blockTag) {
 	        return __awaiter(this, void 0, void 0, function () {
@@ -28758,6 +28791,9 @@
 	            // GetIncentive 返回指定区块的Incentive
 	            case "getIncentive":
 	                return ["eth_getIncentive", [params.blockHashOrNumber,]];
+	            // getPostQuanCounter return postquan tx counter of given address
+	            case "getPostQuanCounter":
+	                return ["eth_getPostQuanCounter", [getLowerCase(params.address), params.blockTag]];
 	            case "getTransactionCount":
 	                return ["eth_getTransactionCount", [getLowerCase(params.address), params.blockTag]];
 	            case "getCode":
@@ -30633,6 +30669,7 @@
 	        case "getPoSVoting":
 	        case "getCommitTxLength":
 	        case "getIncentive":
+	        case "getPostQuanCounter":
 	        // =============================================
 	        case "getTransactionCount":
 	        case "getCode":

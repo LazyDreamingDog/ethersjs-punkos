@@ -264,6 +264,9 @@ Object.keys(blockchainData).forEach(function (network) {
         addObjectTest("getIncentive", function (provider) {
             return provider.getIncentive("latest");
         }, 0);
+        addObjectTest("getPostQuanCounter", function (provider) {
+            return provider.getPostQuanCounter("latest");
+        }, 0);
     });
     // TODO 单节点网络测试的哈希不确定
     // tests.blocks.forEach((test) => {

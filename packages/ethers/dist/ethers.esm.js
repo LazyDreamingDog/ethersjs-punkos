@@ -9751,7 +9751,7 @@ var __awaiter$3 = (commonjsGlobal && commonjsGlobal.__awaiter) || function (this
 };
 const logger$f = new Logger(version$a);
 const allowedTransactionKeys = [
-    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime"
+    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime", "nestingDepth", "innerTxData"
 ];
 const forwardErrors = [
     Logger.errors.INSUFFICIENT_FUNDS,
@@ -9914,6 +9914,8 @@ class Signer {
                     else if (tx.deployerAddress != null && tx.investorAddress != null && tx.beneficiaryAddress != null && tx.stakedAmount !== 0 && tx.stakedTime !== 0) {
                         tx.type = 6;
                     }
+                    else if (tx.nestingDepth !== 0 && tx.innerTxData != null)
+                        tx.type = 7;
                     else {
                         tx.type = 2;
                     }
@@ -9931,6 +9933,7 @@ class Signer {
                 case 2:
                 case 5:
                 case 6:
+                case 7:
                     // Tx type 2,5,6 only support maxFeePerGas and maxPriorityPerGas
                     if (tx.maxFeePerGas == null && tx.maxPriorityFeePerGas == null) {
                         const feeData = yield this.getFeeData();
@@ -14170,6 +14173,28 @@ function _serializeDeposit(transaction, signature) {
     // Type identification is inserted at the begin
     return hexConcat(["0x06", encode(fields)]);
 }
+function _serializeNested(transaction, signature) {
+    const fields = [
+        formatNumber(transaction.chainId || 0, "chainId"),
+        formatNumber(transaction.nonce || 0, "nonce"),
+        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
+        formatNumber(transaction.value || 0, "value"),
+        (transaction.data || "0x"),
+        (formatAccessList(transaction.accessList || [])),
+        formatNumber(transaction.nestingDepth || 0, "nestingDepth"),
+        (transaction.innerTxData || "0x"),
+    ];
+    if (signature) {
+        const sig = splitSignature(signature);
+        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+        fields.push(stripZeros(sig.r));
+        fields.push(stripZeros(sig.s));
+    }
+    return hexConcat(["0x07", encode(fields)]);
+}
 function serialize(transaction, signature) {
     // Legacy and EIP-155 Transactions
     if (transaction.type == null || transaction.type === 0) {
@@ -14188,6 +14213,8 @@ function serialize(transaction, signature) {
             return _serializeDynamicCrypto(transaction, signature);
         case 6:
             return _serializeDeposit(transaction, signature);
+        case 7:
+            return _serializeNested(transaction, signature);
         default:
             break;
     }
@@ -14384,6 +14411,35 @@ function _parseDeposit(payload) {
     _parseEipSignature(tx, transaction.slice(13), _serializeDeposit);
     return tx;
 }
+function _parseNested(payload) {
+    const transaction = decode(payload.slice(1));
+    if (transaction.length !== 11 && transaction.length !== 14) {
+        logger$h.throwArgumentError("invalid component count for transaction type: 2", "payload", hexlify(payload));
+    }
+    const maxPriorityFeePerGas = handleNumber(transaction[2]);
+    const maxFeePerGas = handleNumber(transaction[3]);
+    const tx = {
+        type: 7,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        accessList: accessListify(transaction[8]),
+        nestingDepth: handleNumber(transaction[9]).toNumber(),
+        innerTxData: transaction[10],
+    };
+    // Unsigned Transaction
+    if (transaction.length === 11) {
+        return tx;
+    }
+    tx.hash = keccak256(payload);
+    _parseEipSignature(tx, transaction.slice(9), _serializeNested);
+    return tx;
+}
 function parse(rawTransaction) {
     const payload = arrayify(rawTransaction);
     // Legacy and EIP-155 Transactions
@@ -14400,6 +14456,8 @@ function parse(rawTransaction) {
             return _parseDynamicCrypto(payload);
         case 6:
             return _parseDeposit(payload);
+        case 7:
+            return _parseNested(payload);
         default:
             break;
     }

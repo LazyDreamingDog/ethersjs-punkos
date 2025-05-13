@@ -300,6 +300,28 @@ function _serializeDeposit(transaction, signature) {
     // Type identification is inserted at the begin
     return (0, bytes_1.hexConcat)(["0x06", RLP.encode(fields)]);
 }
+function _serializeNested(transaction, signature) {
+    var fields = [
+        formatNumber(transaction.chainId || 0, "chainId"),
+        formatNumber(transaction.nonce || 0, "nonce"),
+        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+        ((transaction.to != null) ? (0, address_1.getAddress)(transaction.to) : "0x"),
+        formatNumber(transaction.value || 0, "value"),
+        (transaction.data || "0x"),
+        (formatAccessList(transaction.accessList || [])),
+        formatNumber(transaction.nestingDepth || 0, "nestingDepth"),
+        (transaction.innerTxData || "0x"),
+    ];
+    if (signature) {
+        var sig = (0, bytes_1.splitSignature)(signature);
+        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+        fields.push((0, bytes_1.stripZeros)(sig.r));
+        fields.push((0, bytes_1.stripZeros)(sig.s));
+    }
+    return (0, bytes_1.hexConcat)(["0x07", RLP.encode(fields)]);
+}
 function serialize(transaction, signature) {
     // Legacy and EIP-155 Transactions
     if (transaction.type == null || transaction.type === 0) {
@@ -318,6 +340,8 @@ function serialize(transaction, signature) {
             return _serializeDynamicCrypto(transaction, signature);
         case 6:
             return _serializeDeposit(transaction, signature);
+        case 7:
+            return _serializeNested(transaction, signature);
         default:
             break;
     }
@@ -515,6 +539,35 @@ function _parseDeposit(payload) {
     _parseEipSignature(tx, transaction.slice(13), _serializeDeposit);
     return tx;
 }
+function _parseNested(payload) {
+    var transaction = RLP.decode(payload.slice(1));
+    if (transaction.length !== 11 && transaction.length !== 14) {
+        logger.throwArgumentError("invalid component count for transaction type: 2", "payload", (0, bytes_1.hexlify)(payload));
+    }
+    var maxPriorityFeePerGas = handleNumber(transaction[2]);
+    var maxFeePerGas = handleNumber(transaction[3]);
+    var tx = {
+        type: 7,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        accessList: accessListify(transaction[8]),
+        nestingDepth: handleNumber(transaction[9]).toNumber(),
+        innerTxData: transaction[10],
+    };
+    // Unsigned Transaction
+    if (transaction.length === 11) {
+        return tx;
+    }
+    tx.hash = (0, keccak256_1.keccak256)(payload);
+    _parseEipSignature(tx, transaction.slice(9), _serializeNested);
+    return tx;
+}
 function parse(rawTransaction) {
     var payload = (0, bytes_1.arrayify)(rawTransaction);
     // Legacy and EIP-155 Transactions
@@ -531,6 +584,8 @@ function parse(rawTransaction) {
             return _parseDynamicCrypto(payload);
         case 6:
             return _parseDeposit(payload);
+        case 7:
+            return _parseNested(payload);
         default:
             break;
     }

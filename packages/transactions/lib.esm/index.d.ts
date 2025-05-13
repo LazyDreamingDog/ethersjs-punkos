@@ -31,6 +31,8 @@ export declare type UnsignedTransaction = {
     beneficiaryAddress?: BytesLike;
     stakedAmount?: BigNumberish;
     stakedTime?: number;
+    nestingDepth?: number;
+    innerTxData?: BytesLike;
 };
 export interface Transaction {
     hash?: string;
@@ -58,6 +60,8 @@ export interface Transaction {
     beneficiaryAddress?: BytesLike;
     stakedAmount?: BigNumberish;
     stakedTime?: number;
+    nestingDepth?: number;
+    innerTxData?: BytesLike;
 }
 export declare function computeAddress(key: BytesLike | string): string;
 export declare function recoverAddress(digest: BytesLike, signature: SignatureLike): string;

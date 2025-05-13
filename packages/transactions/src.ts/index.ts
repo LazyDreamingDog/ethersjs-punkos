@@ -62,6 +62,10 @@ export type UnsignedTransaction = {
     beneficiaryAddress?: BytesLike;
     stakedAmount?: BigNumberish;
     stakedTime?: number;
+
+    // Nested; Type 7
+    nestingDepth?:number;
+    innerTxData?:BytesLike;
 }
 
 export interface Transaction {
@@ -104,6 +108,10 @@ export interface Transaction {
     beneficiaryAddress?: BytesLike;
     stakedAmount?: BigNumberish;
     stakedTime?: number;
+
+    // Nested; type 7
+    nestingDepth?:number;
+    innerTxData?:BytesLike;
 }
 
 ///////////////////////////////
@@ -354,9 +362,9 @@ function _serializeDynamicCrypto(transaction: UnsignedTransaction, signature?: S
     // If post-quantum signature is used, add the fields
     if (transaction?.signatureData) {
         fields.push(transaction.postAddress || "0x"),
-            fields.push(transaction.cryptoType || "0x"),
-            fields.push(transaction.signatureData || "0x"),
-            fields.push(transaction.publicKey || "0x")
+        fields.push(transaction.cryptoType || "0x"),
+        fields.push(transaction.signatureData || "0x"),
+        fields.push(transaction.publicKey || "0x")
     }
 
     if (signature) {
@@ -398,6 +406,29 @@ function _serializeDeposit(transaction: UnsignedTransaction, signature?: Signatu
     return hexConcat(["0x06", RLP.encode(fields)]);
 }
 
+function _serializeNested(transaction: UnsignedTransaction, signature?: SignatureLike): string{
+    const fields: any = [
+        formatNumber(transaction.chainId || 0, "chainId"),
+        formatNumber(transaction.nonce || 0, "nonce"),
+        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+        ((transaction.to != null) ? getAddress(transaction.to) : "0x"),
+        formatNumber(transaction.value || 0, "value"),
+        (transaction.data || "0x"),
+        (formatAccessList(transaction.accessList || [])),
+        formatNumber(transaction.nestingDepth||0,"nestingDepth"),
+        (transaction.innerTxData||"0x"),
+    ];
+
+    if (signature) {
+        const sig = splitSignature(signature);
+        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+        fields.push(stripZeros(sig.r));
+        fields.push(stripZeros(sig.s));
+    }
+    return hexConcat(["0x07", RLP.encode(fields)]);
+}
 
 export function serialize(transaction: UnsignedTransaction, signature?: SignatureLike): string {
     // Legacy and EIP-155 Transactions
@@ -418,6 +449,8 @@ export function serialize(transaction: UnsignedTransaction, signature?: Signatur
             return _serializeDynamicCrypto(transaction, signature);
         case 6:
             return _serializeDeposit(transaction, signature);
+        case 7:
+            return _serializeNested(transaction,signature);
         default:
             break;
     }
@@ -640,6 +673,40 @@ function _parseDeposit(payload: Uint8Array): Transaction {
     return tx;
 }
 
+
+function _parseNested(payload: Uint8Array): Transaction {
+    const transaction = RLP.decode(payload.slice(1));
+
+    if (transaction.length !== 11 && transaction.length !== 14) {
+        logger.throwArgumentError("invalid component count for transaction type: 2", "payload", hexlify(payload));
+    }
+
+    const maxPriorityFeePerGas = handleNumber(transaction[2]);
+    const maxFeePerGas = handleNumber(transaction[3]);
+    const tx: Transaction = {
+        type: 7,
+        chainId: handleNumber(transaction[0]).toNumber(),
+        nonce: handleNumber(transaction[1]).toNumber(),
+        maxPriorityFeePerGas: maxPriorityFeePerGas,
+        maxFeePerGas: maxFeePerGas,
+        gasLimit: handleNumber(transaction[4]),
+        to: handleAddress(transaction[5]),
+        value: handleNumber(transaction[6]),
+        data: transaction[7],
+        accessList: accessListify(transaction[8]),
+        nestingDepth:handleNumber(transaction[9]).toNumber(),
+        innerTxData:transaction[10],
+    };
+
+    // Unsigned Transaction
+    if (transaction.length === 11) { return tx; }
+
+    tx.hash = keccak256(payload);
+    _parseEipSignature(tx, transaction.slice(9), _serializeNested);
+    return tx;
+}
+
+
 export function parse(rawTransaction: BytesLike): Transaction {
     const payload = arrayify(rawTransaction);
 
@@ -656,6 +723,8 @@ export function parse(rawTransaction: BytesLike): Transaction {
             return _parseDynamicCrypto(payload);
         case 6:
             return _parseDeposit(payload);
+        case 7:
+            return _parseNested(payload);
         default:
             break;
     }

@@ -57,7 +57,7 @@ var logger_1 = require("@ethersproject/logger");
 var _version_1 = require("./_version");
 var logger = new logger_1.Logger(_version_1.version);
 var allowedTransactionKeys = [
-    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime"
+    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime", "nestingDepth", "innerTxData"
 ];
 var forwardErrors = [
     logger_1.Logger.errors.INSUFFICIENT_FUNDS,
@@ -302,6 +302,8 @@ var Signer = /** @class */ (function () {
                                 else if (tx.deployerAddress != null && tx.investorAddress != null && tx.beneficiaryAddress != null && tx.stakedAmount !== 0 && tx.stakedTime !== 0) {
                                     tx.type = 6;
                                 }
+                                else if (tx.nestingDepth !== 0 && tx.innerTxData != null)
+                                    tx.type = 7;
                                 else {
                                     tx.type = 2;
                                 }
@@ -314,6 +316,7 @@ var Signer = /** @class */ (function () {
                             case 2: return [3 /*break*/, 3];
                             case 5: return [3 /*break*/, 3];
                             case 6: return [3 /*break*/, 3];
+                            case 7: return [3 /*break*/, 3];
                         }
                         return [3 /*break*/, 6];
                     case 2:

@@ -28,6 +28,8 @@ export declare type TransactionRequest = {
     beneficiaryAddress?: BytesLike;
     stakedAmount?: BigNumberish;
     stakedTime?: number;
+    nestingDepth?: number;
+    innerTxData?: BytesLike;
 };
 export interface TransactionResponse extends Transaction {
     hash: string;

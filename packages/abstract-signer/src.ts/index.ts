@@ -10,7 +10,7 @@ import { version } from "./_version";
 const logger = new Logger(version);
 
 const allowedTransactionKeys: Array<string> = [
-    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime"
+    "accessList", "ccipReadEnabled", "chainId", "customData", "data", "from", "gasLimit", "gasPrice", "maxFeePerGas", "maxPriorityFeePerGas", "nonce", "to", "type", "value", "postAddress", "cryptoType", "signatureData", "publicKey", "deployerAddress", "investorAddress", "beneficiaryAddress", "stakeAmount", "stakeTime", "nestingDepth" ,"innerTxData"
 ];
 
 const forwardErrors = [
@@ -233,7 +233,9 @@ export abstract class Signer {
                     tx.type=5
                 }else if (tx.deployerAddress!=null && tx.investorAddress!=null && tx.beneficiaryAddress!=null && tx.stakedAmount!==0 && tx.stakedTime!==0){
                     tx.type=6
-                }else{
+                }else if (tx.nestingDepth!==0 && tx.innerTxData!=null)
+                    tx.type=7
+                else{
                     tx.type=2
                 }
             }
@@ -249,6 +251,7 @@ export abstract class Signer {
             case 2:
             case 5:
             case 6:
+            case 7:
                 // Tx type 2,5,6 only support maxFeePerGas and maxPriorityPerGas
                 if (tx.maxFeePerGas==null && tx.maxPriorityFeePerGas==null) {
                     const feeData = await this.getFeeData();

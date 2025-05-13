@@ -41,12 +41,17 @@ export type TransactionRequest = {
     cryptoType?:BytesLike  
     signatureData?:BytesLike
     publicKey?:BytesLike
+    
     // Deposit; Type 6
     deployerAddress?:BytesLike;
 	investorAddress ?:BytesLike;
 	beneficiaryAddress?:BytesLike;
 	stakedAmount?:BigNumberish;
 	stakedTime?:number;
+
+    // Nested; Type 7
+    nestingDepth?:number;
+    innerTxData?:BytesLike;
 }
 
 export interface TransactionResponse extends Transaction {

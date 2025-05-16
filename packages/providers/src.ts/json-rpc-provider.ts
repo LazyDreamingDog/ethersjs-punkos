@@ -567,9 +567,33 @@ export class JsonRpcProvider extends BaseProvider {
             case "getInterest":
                 return [ "eth_getInterest", [ getLowerCase(params.address), params.blockTag ] ];
 
-                // getSecurityLevel
+            // getSecurityLevel
             case "getSecurityLevel":
                 return [ "eth_getSecurityLevel", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getPledgeYear":
+                return [ "eth_getPledgeYear", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getPledgeAmount":
+                return [ "eth_getPledgeAmount", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getCurrentInterest":
+                return [ "eth_getCurrentInterest", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getAnnualFee":
+                return [ "eth_getAnnualFee", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getDeployedAddress":
+                return [ "eth_getDeployedAddress", [ getLowerCase(params.address), params.blockTag ] ];
+
+             case "getInvestorAddress":
+                return [ "eth_getInvestorAddress", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getBeneficiaryAddress":
+                return [ "eth_getBeneficiaryAddress", [ getLowerCase(params.address), params.blockTag ] ];
+
+            case "getStakeFlag":
+                return [ "eth_getStakeFlag", [ getLowerCase(params.address), params.blockTag ] ];
 
             // GetPowDifficulty 返回指定区块的PowDifficulty
             case "getPowDifficulty":

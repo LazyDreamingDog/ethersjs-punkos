@@ -702,7 +702,7 @@ function _parseNested(payload: Uint8Array): Transaction {
     if (transaction.length === 11) { return tx; }
 
     tx.hash = keccak256(payload);
-    _parseEipSignature(tx, transaction.slice(9), _serializeNested);
+    _parseEipSignature(tx, transaction.slice(11), _serializeNested);
     return tx;
 }
 

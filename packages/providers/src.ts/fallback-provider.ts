@@ -283,6 +283,14 @@ function getProcessFunc(provider: FallbackProvider, method: string, params: { [k
         case "getCommitTxLength":
         case "getIncentive":
         case "getPostQuanCounter":
+        case "getPledgeYear":
+        case "getPledgeAmount":
+        case "getCurrentInterest":
+        case "getAnnualFee":
+        case "getDeployedAddress":
+        case "getInvestorAddress":
+        case "getBeneficiaryAddress":
+        case "getStakeFlag":
 // =============================================
 
         case "getTransactionCount":

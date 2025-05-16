@@ -1,0 +1,234 @@
+// {} partly import, if not add is completely import
+const { ethers } = require("ethers");
+const { recoverAddress } = require("ethers/lib/utils");
+
+const fs = require("fs");
+
+const httpRPCport = '36054'
+const provider = new ethers.providers.JsonRpcProvider(`http://localhost:${httpRPCport}`);
+const privateKey = "79ee13d43ee67bd74538931d9c9e07b23c3a3f14e15892c06efbf9830a12697a"
+const wallet = new ethers.Wallet(privateKey, provider);
+
+// Test Connection
+async function testConnection() {
+    try {
+        // 获取当前区块号
+        const blockNumber = await provider.getBlockNumber();
+        console.log("当前区块号:", blockNumber);
+        // 获取网络信息
+        const network = await provider.getNetwork();
+        console.log("网络信息:", network);
+        // 获取链 ID
+        const chainId = await provider.getNetwork().then(net => net.chainId);
+        console.log("链 ID:", chainId);
+    } catch (error) {
+        console.error("连接 Geth 节点失败:", error);
+    }
+}
+
+async function newDynamicCryptoTx() {
+    const toAddress = "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF";
+    const amount = 1000;
+    // Nonce
+    const nonce = await provider.getTransactionCount(wallet.address, "latest");
+    console.log("sender address:", wallet.address, "with", nonce);
+    const tx = {
+        type: 5,
+        nonce: nonce,
+        chainId: 20250226,
+        to: toAddress,
+        value: amount,
+        maxFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        maxPriorityFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        gasLimit: 51000,
+        data: "0x",
+        accessList: [ // 设置访问列表
+            {
+                address: "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF",
+                storageKeys: [
+                    "0x0000000000000000000000000000000000000000000000000000000000000000",
+                ],
+            },
+        ],
+        postAddress: ethers.utils.hexlify(toAddress),
+        cryptoType: ethers.utils.hexlify(ethers.utils.toUtf8Bytes("ml_dsa")),
+        signatureData: ethers.utils.hexlify("0x174545"),
+        publicKey: ethers.utils.hexlify("0x12"),
+    };
+    return tx;
+}
+
+async function newDepositTx() {
+    const toAddress = "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF";
+    const amount = 1000;
+    // Nonce
+    const nonce = await provider.getTransactionCount(wallet.address, "latest");
+    console.log("sender address:", wallet.address, "with", nonce);
+    const tx = {
+        type: 6,
+        chainId: 20250226,
+        nonce: nonce,
+        maxPriorityFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        maxFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        gasLimit: 1010004,
+        to: null,
+        value: 0,
+        data: "0x608060405234801561001057600080fd5b50610f50806100206000396000f3fe60806040526004361061004a5760003560e01c8063040318521461004f57806322cb8f171461008c578063492cc769146100b55780634a4fbbc5146100d1578063718b23b91461010e575b600080fd5b34801561005b57600080fd5b50610076600480360381019061007191906108bd565b610137565b6040516100839190610932565b60405180910390f35b34801561009857600080fd5b506100b360048036038101906100ae9190610979565b610203565b005b6100cf60048036038101906100ca91906109d5565b6103fe565b005b3480156100dd57600080fd5b506100f860048036038101906100f391906109d5565b610588565b6040516101059190610932565b60405180910390f35b34801561011a57600080fd5b5061013560048036038101906101309190610979565b610616565b005b60008060008460405161014a9190610a8f565b9081526020016040518091039020600001541161019c576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161019390610b03565b60405180910390fd5b6000836040516101ac9190610a8f565b908152602001604051809103902060010160008373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054905092915050565b600080836040516102149190610a8f565b90815260200160405180910390206000015411610266576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161025d90610b03565b60405180910390fd5b600081116102a9576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016102a090610b6f565b60405180910390fd5b806000836040516102ba9190610a8f565b908152602001604051809103902060010160003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002054101561034a576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161034190610bdb565b60405180910390fd5b8060008360405161035b9190610a8f565b908152602001604051809103902060010160003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282546103b89190610c2a565b925050819055507feb53452b940569794505b5ccb4b48e08786a899aa1794a6796f7512c6fea33483383836040516103f293929190610ca6565b60405180910390a15050565b6000808260405161040f9190610a8f565b90815260200160405180910390206000015411610461576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161045890610b03565b60405180910390fd5b600034116104a4576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161049b90610d56565b60405180910390fd5b600080826040516104b59190610a8f565b908152602001604051809103902060000154346104d29190610d76565b9050806000836040516104e59190610a8f565b908152602001604051809103902060010160003373ffffffffffffffffffffffffffffffffffffffff1673ffffffffffffffffffffffffffffffffffffffff16815260200190815260200160002060008282546105429190610db8565b925050819055507f501a9ecf967fda2dcccfd685e4f8b58a3de512cfcd53743a50fd99f83494ca1433838360405161057c93929190610ca6565b60405180910390a15050565b60008060008360405161059b9190610a8f565b908152602001604051809103902060000154116105ed576040517f08c379a00000000000000000000000000000000000000000000000000000000081526004016105e490610b03565b60405180910390fd5b6000826040516105fd9190610a8f565b9081526020016040518091039020600001549050919050565b60008111610659576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161065090610e5e565b60405180910390fd5b600082511161069d576040517f08c379a000000000000000000000000000000000000000000000000000000000815260040161069490610eca565b60405180910390fd5b600080836040516106ae9190610a8f565b908152602001604051809103902090508181600001819055507f0c324fed918846efdb09386809446408bb77a2edc57d96a95198bbc3e0be627c83836040516106f8929190610eea565b60405180910390a1505050565b6000604051905090565b600080fd5b600080fd5b600080fd5b600080fd5b6000601f19601f8301169050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052604160045260246000fd5b61076c82610723565b810181811067ffffffffffffffff8211171561078b5761078a610734565b5b80604052505050565b600061079e610705565b90506107aa8282610763565b919050565b600067ffffffffffffffff8211156107ca576107c9610734565b5b6107d382610723565b9050602081019050919050565b82818337600083830152505050565b60006108026107fd846107af565b610794565b90508281526020810184848401111561081e5761081d61071e565b5b6108298482856107e0565b509392505050565b600082601f83011261084657610845610719565b5b81356108568482602086016107ef565b91505092915050565b600073ffffffffffffffffffffffffffffffffffffffff82169050919050565b600061088a8261085f565b9050919050565b61089a8161087f565b81146108a557600080fd5b50565b6000813590506108b781610891565b92915050565b600080604083850312156108d4576108d361070f565b5b600083013567ffffffffffffffff8111156108f2576108f1610714565b5b6108fe85828601610831565b925050602061090f858286016108a8565b9150509250929050565b6000819050919050565b61092c81610919565b82525050565b60006020820190506109476000830184610923565b92915050565b61095681610919565b811461096157600080fd5b50565b6000813590506109738161094d565b92915050565b600080604083850312156109905761098f61070f565b5b600083013567ffffffffffffffff8111156109ae576109ad610714565b5b6109ba85828601610831565b92505060206109cb85828601610964565b9150509250929050565b6000602082840312156109eb576109ea61070f565b5b600082013567ffffffffffffffff811115610a0957610a08610714565b5b610a1584828501610831565b91505092915050565b600081519050919050565b600081905092915050565b60005b83811015610a52578082015181840152602081019050610a37565b60008484015250505050565b6000610a6982610a1e565b610a738185610a29565b9350610a83818560208601610a34565b80840191505092915050565b6000610a9b8284610a5e565b915081905092915050565b600082825260208201905092915050565b7f566f756368657220646f65736e27742065786973740000000000000000000000600082015250565b6000610aed601583610aa6565b9150610af882610ab7565b602082019050919050565b60006020820190508181036000830152610b1c81610ae0565b9050919050565b7f416d6f756e74206d7573742062652067726561746572207468616e207a65726f600082015250565b6000610b59602083610aa6565b9150610b6482610b23565b602082019050919050565b60006020820190508181036000830152610b8881610b4c565b9050919050565b7f496e73756666696369656e742062616c616e6365000000000000000000000000600082015250565b6000610bc5601483610aa6565b9150610bd082610b8f565b602082019050919050565b60006020820190508181036000830152610bf481610bb8565b9050919050565b7f4e487b7100000000000000000000000000000000000000000000000000000000600052601160045260246000fd5b6000610c3582610919565b9150610c4083610919565b9250828203905081811115610c5857610c57610bfb565b5b92915050565b610c678161087f565b82525050565b6000610c7882610a1e565b610c828185610aa6565b9350610c92818560208601610a34565b610c9b81610723565b840191505092915050565b6000606082019050610cbb6000830186610c5e565b8181036020830152610ccd8185610c6d565b9050610cdc6040830184610923565b949350505050565b7f4d6573736167652076616c7565206d757374206265206772656174657220746860008201527f616e207a65726f00000000000000000000000000000000000000000000000000602082015250565b6000610d40602783610aa6565b9150610d4b82610ce4565b604082019050919050565b60006020820190508181036000830152610d6f81610d33565b9050919050565b6000610d8182610919565b9150610d8c83610919565b9250828202610d9a81610919565b91508282048414831517610db157610db0610bfb565b5b5092915050565b6000610dc382610919565b9150610dce83610919565b9250828201905080821115610de657610de5610bfb565b5b92915050565b7f436f6e76657273696f6e2072617465206d75737420626520677265617465722060008201527f7468616e207a65726f0000000000000000000000000000000000000000000000602082015250565b6000610e48602983610aa6565b9150610e5382610dec565b604082019050919050565b60006020820190508181036000830152610e7781610e3b565b9050919050565b7f566f7563686572206e616d652063616e6e6f7420626520656d70747900000000600082015250565b6000610eb4601c83610aa6565b9150610ebf82610e7e565b602082019050919050565b60006020820190508181036000830152610ee381610ea7565b9050919050565b60006040820190508181036000830152610f048185610c6d565b9050610f136020830184610923565b939250505056fea26469706673582212200147de9b39b83e8881b97efeaa34e84b5f2342acc00249f92dcce8979058025864736f6c63430008120033",
+        deployerAddress: wallet.address,
+        investorAddress: wallet.address,
+        beneficiaryAddress: wallet.address,
+        stakedAmount: 3,
+        stakedTime: 2,
+    };
+    return tx;
+}
+
+async function newNestedTx(){
+    // Nonce
+    const nonce = await provider.getTransactionCount(wallet.address, "latest");
+    console.log("sender address:", wallet.address, "with", nonce);
+
+    const innerTx = {
+        chainId: 20250226,
+        // Attention nonce
+        nonce: nonce,
+        to: "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF",
+        value: ethers.utils.parseUnits("1", "gwei"),
+        gasLimit: 31000,
+        gasPrice: ethers.utils.parseUnits("1", "gwei"),
+    };
+    const signedInnerTx = await wallet.signTransaction(innerTx);
+
+    const tx = {
+        type: 7,
+        chainId: 20250226,
+        nonce: nonce,
+        maxPriorityFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        maxFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        gasLimit: 1010004,
+        to: null,
+        data: "0x",
+        accessList: [ // 设置访问列表
+            {
+                address: "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF",
+                storageKeys: [
+                    "0x0000000000000000000000000000000000000000000000000000000000000000",
+                ],
+            },
+        ],
+        nestingDepth:1,
+        innerTxData:signedInnerTx,
+    };
+    return tx
+}
+
+
+async function sendRawTransaction() {
+    try {
+        // Check chain whether approve London(EIP-1559)
+        const isLondonActive = await provider.send("eth_getBlockByNumber", ["latest", false]);
+        if (isLondonActive.baseFeePerGas) {
+            console.log("London hardfork is active, EIP-1559 supported");
+        } else {
+            console.log("London hardfork is not active, EIP-1559 not supported");
+        }
+        tx = await newNestedTx();
+        // Sign tx, signed tx will be rlp coding
+        const signedTx = await wallet.signTransaction(tx);
+        // Send tx with signature
+        const txHash = await provider.send("eth_sendRawTransaction", [signedTx]);
+        console.log("Tx has send, Hash:", txHash);
+        // Wait tx execute
+        const receipt = await provider.waitForTransaction(txHash);
+        console.log("Tx is execute");
+    } catch (error) {
+        console.error("Tx send error:", error);
+    }
+}
+
+
+async function sendTransactionWithProvider() {
+    try {
+        tx = await newDepositTx();
+        // Sign tx, signed tx will be rlp coding
+        const signedTx = await wallet.signTransaction(tx); 
+        // Send tx with signature
+        const txResponse = await provider.sendTransaction(signedTx);
+        txHash = txResponse.hash;
+        console.log("Tx has send, tx hash:", txHash);
+        // Wait tx execute
+        const receipt = await provider.waitForTransaction(txHash);
+        console.log("Tx is execute");
+    } catch (error) {
+        console.error("Tx send error:", error);
+    }
+}
+
+// Decode Keystore to get address
+async function decodeAddress(keystorePath, password) {
+    keystore = fs.readFileSync(keystorePath).toString();
+    ethers.Wallet.fromEncryptedJson(keystore, password)
+        .then(wallet => {
+            console.log("Account address:", wallet.address);
+            console.log("Private key:", wallet.privateKey);
+        })
+        .catch(error => {
+            console.error("Decode error:", error);
+        });
+}
+
+// Check chain whether start mining
+async function startMining() {
+    try {
+        const isMining = await provider.send("eth_mining", []);
+        console.log("Is mining? ", isMining);
+        if (isMining) {
+            console.log("Miner start")
+        } else {
+            var minerAddr = '0x57F96028bA3258ebFb4940d67443967cF23e3fc4'
+            // Set etherbase
+            await provider.send("miner_setEtherbase", [minerAddr])
+            console.log("Attempt to begin mining...");
+            await provider.send("miner_start", []);
+            console.log("Miner is start");
+        }
+    } catch (error) {
+        console.error("Miner start error", error);
+    }
+}
+
+async function testGetPostQuanCounter(){
+    const lookAddress="0xaDEEeEb9d0eed7BAfe099B2A371671BAa2255B0A"
+    const postquancounter = await provider.getPostQuanCounter(lookAddress, "latest");
+    console.log("sender address:", lookAddress, "with postquan counter", postquancounter);
+
+    const nonce = await provider.getTransactionCount(lookAddress, "latest");
+    console.log("sender address:", lookAddress, "with nonce", nonce);
+}
+
+async function testDepositAPI(){
+    var year=await provider.getPledgeYear(wallet.address,"latest");
+    var address=await provider.getDeployedAddress(wallet.address,"latest");
+    var flag=await provider.getStakeFlag(wallet.address,"latest");
+    console.log("year:",year);
+    console.log("address:",address);
+    console.log("flag:",flag)
+}
+
+
+async function main() {
+    // testConnection();
+    await startMining();
+    // await testGetPostQuanCounter();
+
+
+    // await sendTransactionWithProvider();
+    // await sendRawTransaction();
+    testDepositAPI();
+
+    // const password = "123456"; 
+    // const keystorePath = "./UTC--2025-01-02T06-44-10.632476887Z--57f96028ba3258ebfb4940d67443967cf23e3fc4";
+    // decodeAddress(keystorePath,password)
+}
+
+main();

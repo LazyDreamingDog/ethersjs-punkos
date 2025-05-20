@@ -1,6 +1,8 @@
 const { ethers } = require("ethers");
 const {provider,wallet}=require("./tx.js");
 const { get } = require("http");
+const fs = require('fs');
+const zlib = require('zlib');
 
 
 module.exports={
@@ -23,6 +25,15 @@ const contract = new ethers.Contract(
   wallet
 );
 
+async function compressBufferToBase64(buffer) {
+  return new Promise((resolve, reject) => {
+    zlib.gzip(buffer, (err, compressed) => {
+      if (err) return reject(err);
+      const base64 = compressed.toString('base64');
+      resolve(base64);
+    });
+  });
+}
 
 async function uploadCode(name,code,gas,itype,otype){
     try{
@@ -72,18 +83,25 @@ async function getAllAlgo(){
 }
 
 async function testcoprocessor(){
-    // Test upload algorithm 
-    const algoname="Add"
-    const code="H4sIAAAAAAAA/ypITM5OTE9VyE3MzOPiyswtyC8qUdDg4lTKTSzJ0E/KTFfi0uTiSivNS1ZwTEnRSFTQSspM1/PMK9FRSIKzNeEshWouzqLUktKiPIVEPbAGHYUkTa5aLkAAAAD//9dFMqpoAAAA"
-    const gas=100;
-    const itype="int256,int256";
-    const otype="int256";
-    await uploadCode(algoname,code,gas,itype,otype);
+    // // Test upload algorithm 
+    // const algoname="Add"
+    // const code="H4sIAAAAAAAA/ypITM5OTE9VyE3MzOPiyswtyC8qUdDg4lTKTSzJ0E/KTFfi0uTiSivNS1ZwTEnRSFTQSspM1/PMK9FRSIKzNeEshWouzqLUktKiPIVEPbAGHYUkTa5aLkAAAAD//9dFMqpoAAAA"
+    // const gas=100;
+    // const itype="int256,int256";
+    // const otype="int256";
+    // await uploadCode(algoname,code,gas,itype,otype);
 
-    // Get algorithm info
-    var [rcode,rgas,ritype,rotype]=await getInfo(algoname);
-    console.log(rcode,rgas,ritype,rotype);
+    // // Get algorithm info
+    // var [rcode,rgas,ritype,rotype]=await getInfo(algoname);
+    // console.log(rcode,rgas,ritype,rotype);
 
-    var algos=await getAllAlgo();
-    console.log(algos);
+    // var algos=await getAllAlgo();
+    // console.log(algos);
+    let buffer=`package main
+
+func Add(a int, b int) int {
+	return a + b
+}`;
+    let combuffer=await compressBufferToBase64(buffer);
+    console.log(combuffer);
 }

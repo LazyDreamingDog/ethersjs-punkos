@@ -19,7 +19,7 @@ async function main() {
     // await testVoucher();
 
     // *Test Coprocessor
-    // await testcoprocessor();
+    await testcoprocessor();
 
     // * Test tx send(write method)
     // tx=await newDynamicFeeTx();

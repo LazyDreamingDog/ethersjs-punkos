@@ -135,7 +135,6 @@ export class Signer {
     //  - We allow gasPrice for EIP-1559 as long as it matches maxFeePerGas
     populateTransaction(transaction) {
         return __awaiter(this, void 0, void 0, function* () {
-            console.log("tx request at populateTransaction's begin", transaction);
             const tx = yield resolveProperties(this.checkTransaction(transaction));
             if (tx.to != null) {
                 tx.to = Promise.resolve(tx.to).then((to) => __awaiter(this, void 0, void 0, function* () {
@@ -239,7 +238,6 @@ export class Signer {
                     return results[0];
                 });
             }
-            console.log("tx request at populateTransaction's end", tx);
             return yield resolveProperties(tx);
         });
     }

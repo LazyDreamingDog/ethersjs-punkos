@@ -1308,6 +1308,158 @@ export class BaseProvider extends Provider {
             }
         });
     }
+    getPledgeYear(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPledgeYear", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPledgeYear",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getPledgeAmount(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getPledgeAmount", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getPledgeAmount",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getCurrentInterest(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getCurrentInterest", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getCurrentInterest",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getAnnualFee(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getAnnualFee", params);
+            try {
+                return BigNumber.from(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getAnnualFee",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getDeployedAddress(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getDeployedAddress", params);
+            try {
+                return this._getAddress(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getDeployedAddress",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getInvestorAddress(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getInvestorAddress", params);
+            try {
+                return this._getAddress(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getInvestorAddress",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getBeneficiaryAddress(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getBeneficiaryAddress", params);
+            try {
+                return this._getAddress(result);
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getBeneficiaryAddress",
+                    params, result, error
+                });
+            }
+        });
+    }
+    getStakeFlag(addressOrName, blockTag) {
+        return __awaiter(this, void 0, void 0, function* () {
+            yield this.getNetwork();
+            const params = yield resolveProperties({
+                address: this._getAddress(addressOrName),
+                blockTag: this._getBlockTag(blockTag)
+            });
+            const result = yield this.perform("getStakeFlag", params);
+            try {
+                return result;
+            }
+            catch (error) {
+                return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                    method: "getStakeFlag",
+                    params, result, error
+                });
+            }
+        });
+    }
     getPostQuanCounter(addressOrName, blockTag) {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getNetwork();

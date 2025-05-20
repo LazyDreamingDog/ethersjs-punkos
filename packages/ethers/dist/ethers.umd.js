@@ -19204,7 +19204,7 @@
 	        return tx;
 	    }
 	    tx.hash = (0, lib$4.keccak256)(payload);
-	    _parseEipSignature(tx, transaction.slice(9), _serializeNested);
+	    _parseEipSignature(tx, transaction.slice(11), _serializeNested);
 	    return tx;
 	}
 	function parse(rawTransaction) {
@@ -26683,6 +26683,270 @@
 	            });
 	        });
 	    };
+	    BaseProvider.prototype.getPledgeYear = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getPledgeYear", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getPledgeYear",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getPledgeAmount = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getPledgeAmount", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getPledgeAmount",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getCurrentInterest = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getCurrentInterest", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getCurrentInterest",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getAnnualFee = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getAnnualFee", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, lib$2.BigNumber.from(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getAnnualFee",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getDeployedAddress = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getDeployedAddress", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, this._getAddress(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getDeployedAddress",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getInvestorAddress = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getInvestorAddress", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, this._getAddress(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getInvestorAddress",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getBeneficiaryAddress = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getBeneficiaryAddress", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, this._getAddress(result)];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getBeneficiaryAddress",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
+	    BaseProvider.prototype.getStakeFlag = function (addressOrName, blockTag) {
+	        return __awaiter(this, void 0, void 0, function () {
+	            var params, result;
+	            return __generator(this, function (_a) {
+	                switch (_a.label) {
+	                    case 0: return [4 /*yield*/, this.getNetwork()];
+	                    case 1:
+	                        _a.sent();
+	                        return [4 /*yield*/, (0, lib$3.resolveProperties)({
+	                                address: this._getAddress(addressOrName),
+	                                blockTag: this._getBlockTag(blockTag)
+	                            })];
+	                    case 2:
+	                        params = _a.sent();
+	                        return [4 /*yield*/, this.perform("getStakeFlag", params)];
+	                    case 3:
+	                        result = _a.sent();
+	                        try {
+	                            return [2 /*return*/, result];
+	                        }
+	                        catch (error) {
+	                            return [2 /*return*/, logger.throwError("bad result from backend", lib.Logger.errors.SERVER_ERROR, {
+	                                    method: "getStakeFlag",
+	                                    params: params,
+	                                    result: result,
+	                                    error: error
+	                                })];
+	                        }
+	                        return [2 /*return*/];
+	                }
+	            });
+	        });
+	    };
 	    BaseProvider.prototype.getPostQuanCounter = function (addressOrName, blockTag) {
 	        return __awaiter(this, void 0, void 0, function () {
 	            var params, result;
@@ -28816,6 +29080,22 @@
 	            // getSecurityLevel
 	            case "getSecurityLevel":
 	                return ["eth_getSecurityLevel", [getLowerCase(params.address), params.blockTag]];
+	            case "getPledgeYear":
+	                return ["eth_getPledgeYear", [getLowerCase(params.address), params.blockTag]];
+	            case "getPledgeAmount":
+	                return ["eth_getPledgeAmount", [getLowerCase(params.address), params.blockTag]];
+	            case "getCurrentInterest":
+	                return ["eth_getCurrentInterest", [getLowerCase(params.address), params.blockTag]];
+	            case "getAnnualFee":
+	                return ["eth_getAnnualFee", [getLowerCase(params.address), params.blockTag]];
+	            case "getDeployedAddress":
+	                return ["eth_getDeployedAddress", [getLowerCase(params.address), params.blockTag]];
+	            case "getInvestorAddress":
+	                return ["eth_getInvestorAddress", [getLowerCase(params.address), params.blockTag]];
+	            case "getBeneficiaryAddress":
+	                return ["eth_getBeneficiaryAddress", [getLowerCase(params.address), params.blockTag]];
+	            case "getStakeFlag":
+	                return ["eth_getStakeFlag", [getLowerCase(params.address), params.blockTag]];
 	            // GetPowDifficulty 返回指定区块的PowDifficulty
 	            case "getPowDifficulty":
 	                return ["eth_getPowDifficulty", [params.blockHashOrNumber,]];
@@ -30728,6 +31008,14 @@
 	        case "getCommitTxLength":
 	        case "getIncentive":
 	        case "getPostQuanCounter":
+	        case "getPledgeYear":
+	        case "getPledgeAmount":
+	        case "getCurrentInterest":
+	        case "getAnnualFee":
+	        case "getDeployedAddress":
+	        case "getInvestorAddress":
+	        case "getBeneficiaryAddress":
+	        case "getStakeFlag":
 	        // =============================================
 	        case "getTransactionCount":
 	        case "getCode":

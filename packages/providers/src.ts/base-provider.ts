@@ -1457,7 +1457,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
-   
+
     // add punkos functions
     // getInterests    
     async getInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
@@ -1478,7 +1478,7 @@ export class BaseProvider extends Provider implements EnsProvider {
         }
     }
 
-     
+
     async getSecurityLevel(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
         await this.getNetwork();
         const params = await resolveProperties({
@@ -1496,7 +1496,151 @@ export class BaseProvider extends Provider implements EnsProvider {
             });
         }
     }
-    
+
+    async getPledgeYear(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getPledgeYear", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPledgeYear",
+                params, result, error
+            });
+        }
+    }
+
+    async getPledgeAmount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getPledgeAmount", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getPledgeAmount",
+                params, result, error
+            });
+        }
+    }
+
+    async getCurrentInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getCurrentInterest", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getCurrentInterest",
+                params, result, error
+            });
+        }
+    }
+
+    async getAnnualFee(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getAnnualFee", params);
+        try {
+            return BigNumber.from(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getAnnualFee",
+                params, result, error
+            });
+        }
+    }
+
+    async getDeployedAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getDeployedAddress", params);
+        try {
+            return this._getAddress(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getDeployedAddress",
+                params, result, error
+            });
+        }
+    }
+
+    async getInvestorAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getInvestorAddress", params);
+        try {
+            return this._getAddress(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getInvestorAddress",
+                params, result, error
+            });
+        }
+    }
+
+    async getBeneficiaryAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getBeneficiaryAddress", params);
+        try {
+            return this._getAddress(result);
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getBeneficiaryAddress",
+                params, result, error
+            });
+        }
+    }
+
+    async getStakeFlag(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<boolean> {
+        await this.getNetwork();
+        const params = await resolveProperties({
+            address: this._getAddress(addressOrName),
+            blockTag: this._getBlockTag(blockTag)
+        });
+
+        const result = await this.perform("getStakeFlag", params);
+        try {
+            return result;
+        } catch (error) {
+            return logger.throwError("bad result from backend", Logger.errors.SERVER_ERROR, {
+                method: "getStakeFlag",
+                params, result, error
+            });
+        }
+    }
+
     async getPostQuanCounter(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number> {
         await this.getNetwork();
         const params = await resolveProperties({

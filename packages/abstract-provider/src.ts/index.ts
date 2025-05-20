@@ -37,21 +37,21 @@ export type TransactionRequest = {
     ccipReadEnabled?: boolean;
 
     // DynamicCrypto; Type 5
-    postAddress?:BytesLike
-    cryptoType?:BytesLike  
-    signatureData?:BytesLike
-    publicKey?:BytesLike
-    
+    postAddress?: BytesLike
+    cryptoType?: BytesLike
+    signatureData?: BytesLike
+    publicKey?: BytesLike
+
     // Deposit; Type 6
-    deployerAddress?:BytesLike;
-	investorAddress ?:BytesLike;
-	beneficiaryAddress?:BytesLike;
-	stakedAmount?:BigNumberish;
-	stakedTime?:number;
+    deployerAddress?: BytesLike;
+    investorAddress?: BytesLike;
+    beneficiaryAddress?: BytesLike;
+    stakedAmount?: BigNumberish;
+    stakedTime?: number;
 
     // Nested; Type 7
-    nestingDepth?:number;
-    innerTxData?:BytesLike;
+    nestingDepth?: number;
+    innerTxData?: BytesLike;
 }
 
 export interface TransactionResponse extends Transaction {
@@ -283,31 +283,41 @@ export abstract class Provider implements OnceBlockable {
     abstract getSecurityLevel(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
     // GetPowDifficulty 返回指定区块的PowDifficulty
     abstract getPowDifficulty(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetPowGas 返回指定区块的PowGas
+    // GetPowGas 返回指定区块的PowGas
     abstract getPowGas(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetPowPrice 返回指定区块的PowPrice
+    // GetPowPrice 返回指定区块的PowPrice
     abstract getPowPrice(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetAvgRatioNumerator 返回指定区块的AvgRatioNumerator
+    // GetAvgRatioNumerator 返回指定区块的AvgRatioNumerator
     abstract getAvgRatioNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetAvgRatioDenominator 返回指定区块的AvgRatioDenominator
+    // GetAvgRatioDenominator 返回指定区块的AvgRatioDenominator
     abstract gettAvgRatioDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetAvgGasNumerator 返回指定区块的AvgGasNumerator
+    // GetAvgGasNumerator 返回指定区块的AvgGasNumerator
     abstract getAvgGasNumerator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetAvgGasDenominator 返回指定区块的AvgGasDenominator
+    // GetAvgGasDenominator 返回指定区块的AvgGasDenominator
     abstract getAvgGasDenominator(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetPoSLeader 返回指定区块的PoSLeader
+    // GetPoSLeader 返回指定区块的PoSLeader
     abstract gePoSLeader(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetPoSVoting 返回指定区块的PoSVoting
+    // GetPoSVoting 返回指定区块的PoSVoting
     abstract getPoSVoting(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<Uint8Array>;
-	// GetCommitTxLength 返回指定区块的CommitTxLength
+    // GetCommitTxLength 返回指定区块的CommitTxLength
     abstract getCommitTxLength(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
-	// GetIncentive 返回指定区块的Incentive
+    // GetIncentive 返回指定区块的Incentive
     abstract getIncentive(blockHashOrNumber: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
     // GetPostQuanCounter return postquan tx counter of given address
     abstract getPostQuanCounter(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
 
+    // Pledage relevant functio
+    abstract getPledgeYear(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    abstract getPledgeAmount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    abstract getCurrentInterest(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    abstract getAnnualFee(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<BigNumber>;
+    abstract getDeployedAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<String>;
+    abstract getInvestorAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<String>;
+    abstract getBeneficiaryAddress(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<String>;
+    abstract getStakeFlag(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<boolean>;
+
     abstract getTransactionCount(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<number>;
-    abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string> ;
+    abstract getCode(addressOrName: string | Promise<string>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
     abstract getStorageAt(addressOrName: string | Promise<string>, position: BigNumberish | Promise<BigNumberish>, blockTag?: BlockTag | Promise<BlockTag>): Promise<string>;
 
     // Execution
@@ -361,43 +371,43 @@ export abstract class Provider implements OnceBlockable {
         return !!(value && value._isProvider);
     }
 
-/*
-    static getResolver(network: Network, callable: CallTransactionable, namehash: string): string {
-        // No ENS...
-        if (!network.ensAddress) {
-            errors.throwError(
-                "network does support ENS",
-                errors.UNSUPPORTED_OPERATION,
-                { operation: "ENS", network: network.name }
-            );
-        }
-
-        // Not a namehash
-        if (!isHexString(namehash, 32)) {
-            errors.throwArgumentError("invalid name hash", "namehash", namehash);
-        }
-
-        // keccak256("resolver(bytes32)")
-        let data = "0x0178b8bf" + namehash.substring(2);
-        let transaction = { to: network.ensAddress, data: data };
-
-        return provider.call(transaction).then((data) => {
-            return provider.formatter.callAddress(data);
-        });
-    }
-
-    static resolveNamehash(network: Network, callable: CallTransactionable, namehash: string): string {
-        return this.getResolver(network, callable, namehash).then((resolverAddress) => {
-            if (!resolverAddress) { return null; }
-
-            // keccak256("addr(bytes32)")
-            let data = "0x3b3b57de" + namehash(name).substring(2);
-            let transaction = { to: resolverAddress, data: data };
-            return callable.call(transaction).then((data) => {
-                return this.formatter.callAddress(data);
+    /*
+        static getResolver(network: Network, callable: CallTransactionable, namehash: string): string {
+            // No ENS...
+            if (!network.ensAddress) {
+                errors.throwError(
+                    "network does support ENS",
+                    errors.UNSUPPORTED_OPERATION,
+                    { operation: "ENS", network: network.name }
+                );
+            }
+    
+            // Not a namehash
+            if (!isHexString(namehash, 32)) {
+                errors.throwArgumentError("invalid name hash", "namehash", namehash);
+            }
+    
+            // keccak256("resolver(bytes32)")
+            let data = "0x0178b8bf" + namehash.substring(2);
+            let transaction = { to: network.ensAddress, data: data };
+    
+            return provider.call(transaction).then((data) => {
+                return provider.formatter.callAddress(data);
             });
-
-        })
-    }
-*/
+        }
+    
+        static resolveNamehash(network: Network, callable: CallTransactionable, namehash: string): string {
+            return this.getResolver(network, callable, namehash).then((resolverAddress) => {
+                if (!resolverAddress) { return null; }
+    
+                // keccak256("addr(bytes32)")
+                let data = "0x3b3b57de" + namehash(name).substring(2);
+                let transaction = { to: resolverAddress, data: data };
+                return callable.call(transaction).then((data) => {
+                    return this.formatter.callAddress(data);
+                });
+    
+            })
+        }
+    */
 }

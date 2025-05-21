@@ -251,9 +251,7 @@ var Signer = /** @class */ (function () {
             var _this = this;
             return __generator(this, function (_b) {
                 switch (_b.label) {
-                    case 0:
-                        console.log("tx request at populateTransaction's begin", transaction);
-                        return [4 /*yield*/, (0, properties_1.resolveProperties)(this.checkTransaction(transaction))];
+                    case 0: return [4 /*yield*/, (0, properties_1.resolveProperties)(this.checkTransaction(transaction))];
                     case 1:
                         tx = _b.sent();
                         if (tx.to != null) {
@@ -370,7 +368,6 @@ var Signer = /** @class */ (function () {
                                 return results[0];
                             });
                         }
-                        console.log("tx request at populateTransaction's end", tx);
                         return [4 /*yield*/, (0, properties_1.resolveProperties)(tx)];
                     case 7: return [2 /*return*/, _b.sent()];
                 }

@@ -1,30 +1,30 @@
-// {} partly import, if not add is completely import
 const { ethers } = require("ethers");
-const { recoverAddress } = require("ethers/lib/utils");
-
-const fs = require("fs");
-
 const httpRPCport = '36054'
-const provider = new ethers.providers.JsonRpcProvider(`http://localhost:${httpRPCport}`);
+const IP="111.119.239.159"
+const provider = new ethers.providers.JsonRpcProvider(`http://${IP}:${httpRPCport}`);
 const privateKey = "79ee13d43ee67bd74538931d9c9e07b23c3a3f14e15892c06efbf9830a12697a"
 const wallet = new ethers.Wallet(privateKey, provider);
 
-// Test Connection
-async function testConnection() {
-    try {
-        // 获取当前区块号
-        const blockNumber = await provider.getBlockNumber();
-        console.log("当前区块号:", blockNumber);
-        // 获取网络信息
-        const network = await provider.getNetwork();
-        console.log("网络信息:", network);
-        // 获取链 ID
-        const chainId = await provider.getNetwork().then(net => net.chainId);
-        console.log("链 ID:", chainId);
-    } catch (error) {
-        console.error("连接 Geth 节点失败:", error);
-    }
+// CommonJS style export
+module.exports = {
+    provider,
+    wallet,
+    newDynamicCryptoTx,newNestedTx,newDepositTx,newDynamicFeeTx
+};  
+
+// Decode Keystore to get address
+async function decodeAddress(keystorePath, password) {
+    keystore = fs.readFileSync(keystorePath).toString();
+    ethers.Wallet.fromEncryptedJson(keystore, password)
+        .then(wallet => {
+            console.log("Account address:", wallet.address);
+            console.log("Private key:", wallet.privateKey);
+        })
+        .catch(error => {
+            console.error("Decode error:", error);
+        });
 }
+
 
 async function newDynamicCryptoTx() {
     const toAddress = "0x165060ff5e0C9d13F48ec605758c9c7fDF6435FF";
@@ -123,112 +123,21 @@ async function newNestedTx(){
 }
 
 
-async function sendRawTransaction() {
-    try {
-        // Check chain whether approve London(EIP-1559)
-        const isLondonActive = await provider.send("eth_getBlockByNumber", ["latest", false]);
-        if (isLondonActive.baseFeePerGas) {
-            console.log("London hardfork is active, EIP-1559 supported");
-        } else {
-            console.log("London hardfork is not active, EIP-1559 not supported");
-        }
-        tx = await newNestedTx();
-        // Sign tx, signed tx will be rlp coding
-        const signedTx = await wallet.signTransaction(tx);
-        // Send tx with signature
-        const txHash = await provider.send("eth_sendRawTransaction", [signedTx]);
-        console.log("Tx has send, Hash:", txHash);
-        // Wait tx execute
-        const receipt = await provider.waitForTransaction(txHash);
-        console.log("Tx is execute");
-    } catch (error) {
-        console.error("Tx send error:", error);
-    }
+async function newDynamicFeeTx(){
+    // Nonce
+    const nonce = await provider.getTransactionCount(wallet.address, "latest");
+    console.log("sender address:", wallet.address, "with", nonce);
+
+    const tx = {
+        type:2,
+        chainId: 20250226,
+        nonce: nonce,
+        maxPriorityFeePerGas: ethers.utils.parseUnits("1", "gwei"),
+        maxFeePerGas: ethers.utils.parseUnits("100", "gwei"),
+        gasLimit: 1010004,
+        to: wallet.address,
+        data: "0x",
+    };
+    return tx
 }
 
-
-async function sendTransactionWithProvider() {
-    try {
-        tx = await newDepositTx();
-        // Sign tx, signed tx will be rlp coding
-        const signedTx = await wallet.signTransaction(tx); 
-        // Send tx with signature
-        const txResponse = await provider.sendTransaction(signedTx);
-        txHash = txResponse.hash;
-        console.log("Tx has send, tx hash:", txHash);
-        // Wait tx execute
-        const receipt = await provider.waitForTransaction(txHash);
-        console.log("Tx is execute");
-    } catch (error) {
-        console.error("Tx send error:", error);
-    }
-}
-
-// Decode Keystore to get address
-async function decodeAddress(keystorePath, password) {
-    keystore = fs.readFileSync(keystorePath).toString();
-    ethers.Wallet.fromEncryptedJson(keystore, password)
-        .then(wallet => {
-            console.log("Account address:", wallet.address);
-            console.log("Private key:", wallet.privateKey);
-        })
-        .catch(error => {
-            console.error("Decode error:", error);
-        });
-}
-
-// Check chain whether start mining
-async function startMining() {
-    try {
-        const isMining = await provider.send("eth_mining", []);
-        console.log("Is mining? ", isMining);
-        if (isMining) {
-            console.log("Miner start")
-        } else {
-            var minerAddr = '0x57F96028bA3258ebFb4940d67443967cF23e3fc4'
-            // Set etherbase
-            await provider.send("miner_setEtherbase", [minerAddr])
-            console.log("Attempt to begin mining...");
-            await provider.send("miner_start", []);
-            console.log("Miner is start");
-        }
-    } catch (error) {
-        console.error("Miner start error", error);
-    }
-}
-
-async function testGetPostQuanCounter(){
-    const lookAddress="0xaDEEeEb9d0eed7BAfe099B2A371671BAa2255B0A"
-    const postquancounter = await provider.getPostQuanCounter(lookAddress, "latest");
-    console.log("sender address:", lookAddress, "with postquan counter", postquancounter);
-
-    const nonce = await provider.getTransactionCount(lookAddress, "latest");
-    console.log("sender address:", lookAddress, "with nonce", nonce);
-}
-
-async function testDepositAPI(){
-    var year=await provider.getPledgeYear(wallet.address,"latest");
-    var address=await provider.getDeployedAddress(wallet.address,"latest");
-    var flag=await provider.getStakeFlag(wallet.address,"latest");
-    console.log("year:",year);
-    console.log("address:",address);
-    console.log("flag:",flag)
-}
-
-
-async function main() {
-    // testConnection();
-    await startMining();
-    // await testGetPostQuanCounter();
-
-
-    // await sendTransactionWithProvider();
-    // await sendRawTransaction();
-    testDepositAPI();
-
-    // const password = "123456"; 
-    // const keystorePath = "./UTC--2025-01-02T06-44-10.632476887Z--57f96028ba3258ebfb4940d67443967cf23e3fc4";
-    // decodeAddress(keystorePath,password)
-}
-
-main();

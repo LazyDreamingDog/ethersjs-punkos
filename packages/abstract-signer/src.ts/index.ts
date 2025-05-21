@@ -195,7 +195,6 @@ export abstract class Signer {
     // Notes:
     //  - We allow gasPrice for EIP-1559 as long as it matches maxFeePerGas
     async populateTransaction(transaction: Deferrable<TransactionRequest>): Promise<TransactionRequest> {
-        console.log("tx request at populateTransaction's begin", transaction);
         const tx: Deferrable<TransactionRequest> = await resolveProperties(this.checkTransaction(transaction))
 
         if (tx.to != null) {
@@ -294,7 +293,6 @@ export abstract class Signer {
                 return results[0];
             });
         }
-        console.log("tx request at populateTransaction's end", tx);
         return await resolveProperties(tx);
     }
 

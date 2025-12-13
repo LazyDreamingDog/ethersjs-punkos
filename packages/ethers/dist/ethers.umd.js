@@ -18672,6 +18672,11 @@
 	    TransactionTypes[TransactionTypes["legacy"] = 0] = "legacy";
 	    TransactionTypes[TransactionTypes["eip2930"] = 1] = "eip2930";
 	    TransactionTypes[TransactionTypes["eip1559"] = 2] = "eip1559";
+	    // blob = 3,  // BlobTxType - 未实现
+	    TransactionTypes[TransactionTypes["pow"] = 4] = "pow";
+	    TransactionTypes[TransactionTypes["dynamicCrypto"] = 5] = "dynamicCrypto";
+	    TransactionTypes[TransactionTypes["deposit"] = 6] = "deposit";
+	    TransactionTypes[TransactionTypes["nested"] = 7] = "nested";
 	})(TransactionTypes = exports.TransactionTypes || (exports.TransactionTypes = {}));
 	;
 	///////////////////////////////
@@ -18803,6 +18808,41 @@
 	        fields.push((0, lib$1.stripZeros)(sig.s));
 	    }
 	    return (0, lib$1.hexConcat)(["0x01", RLP.encode(fields)]);
+	}
+	function _serializePow(transaction, signature) {
+	    // If there is an explicit gasPrice, make sure it matches the
+	    // POW fees; otherwise they may not understand what they
+	    // think they are setting in terms of fee.
+	    if (transaction.gasPrice != null) {
+	        var gasPrice = lib$2.BigNumber.from(transaction.gasPrice);
+	        var maxFeePerGas = lib$2.BigNumber.from(transaction.maxFeePerGas || 0);
+	        if (!gasPrice.eq(maxFeePerGas)) {
+	            logger.throwArgumentError("mismatch POW gasPrice != maxFeePerGas", "tx", {
+	                gasPrice: gasPrice,
+	                maxFeePerGas: maxFeePerGas
+	            });
+	        }
+	    }
+	    var fields = [
+	        formatNumber(transaction.chainId || 0, "chainId"),
+	        formatNumber(transaction.nonce || 0, "nonce"),
+	        formatNumber(transaction.maxPriorityFeePerGas || 0, "maxPriorityFeePerGas"),
+	        formatNumber(transaction.maxFeePerGas || 0, "maxFeePerGas"),
+	        formatNumber(transaction.gasLimit || 0, "gasLimit"),
+	        ((transaction.to != null) ? (0, lib$6.getAddress)(transaction.to) : "0x"),
+	        formatNumber(transaction.value || 0, "value"),
+	        (transaction.data || "0x"),
+	        (formatAccessList(transaction.accessList || [])),
+	        formatNumber(transaction.hashNonce || 0, "hashNonce"),
+	        formatNumber(transaction.startHeight || 0, "startHeight")
+	    ];
+	    if (signature) {
+	        var sig = (0, lib$1.splitSignature)(signature);
+	        fields.push(formatNumber(sig.recoveryParam, "recoveryParam"));
+	        fields.push((0, lib$1.stripZeros)(sig.r));
+	        fields.push((0, lib$1.stripZeros)(sig.s));
+	    }
+	    return (0, lib$1.hexConcat)(["0x04", RLP.encode(fields)]);
 	}
 	// Legacy Transactions and EIP-155
 	function _serialize(transaction, signature) {
@@ -18972,6 +19012,8 @@
 	            return _serializeEip2930(transaction, signature);
 	        case 2:
 	            return _serializeEip1559(transaction, signature);
+	        case 4:
+	            return _serializePow(transaction, signature);
 	        case 5:
 	            return _serializeDynamicCrypto(transaction, signature);
 	        case 6:
@@ -19056,6 +19098,36 @@
 	    }
 	    tx.hash = (0, lib$4.keccak256)(payload);
 	    _parseEipSignature(tx, transaction.slice(8), _serializeEip2930);
+	    return tx;
+	}
+	function _parsePow(payload) {
+	    var transaction = RLP.decode(payload.slice(1));
+	    if (transaction.length !== 11 && transaction.length !== 14) {
+	        logger.throwArgumentError("invalid component count for transaction type: 4", "payload", (0, lib$1.hexlify)(payload));
+	    }
+	    var maxPriorityFeePerGas = handleNumber(transaction[2]);
+	    var maxFeePerGas = handleNumber(transaction[3]);
+	    var tx = {
+	        type: 4,
+	        chainId: handleNumber(transaction[0]).toNumber(),
+	        nonce: handleNumber(transaction[1]).toNumber(),
+	        maxPriorityFeePerGas: maxPriorityFeePerGas,
+	        maxFeePerGas: maxFeePerGas,
+	        gasPrice: null,
+	        gasLimit: handleNumber(transaction[4]),
+	        to: handleAddress(transaction[5]),
+	        value: handleNumber(transaction[6]),
+	        data: transaction[7],
+	        accessList: accessListify(transaction[8]),
+	        hashNonce: handleNumber(transaction[9]),
+	        startHeight: handleNumber(transaction[10])
+	    };
+	    // Unsigned POW Transaction
+	    if (transaction.length === 11) {
+	        return tx;
+	    }
+	    tx.hash = (0, lib$4.keccak256)(payload);
+	    _parseEipSignature(tx, transaction.slice(11), _serializePow);
 	    return tx;
 	}
 	// Legacy Transactions and EIP-155
@@ -19216,6 +19288,8 @@
 	            return _parseEip2930(payload);
 	        case 2:
 	            return _parseEip1559(payload);
+	        case 4:
+	            return _parsePow(payload);
 	        case 5:
 	            return _parseDynamicCrypto(payload);
 	        case 6:
